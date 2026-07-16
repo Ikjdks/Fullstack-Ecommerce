@@ -93,6 +93,7 @@ export const getAnalytics = async (req, res) => {
     const bestSellingQuery = `
       SELECT
         p.id,
+        p.image_url,
         p.title,
         SUM(oi.quantity) AS sold,
         SUM(oi.quantity * oi.price_at_purchase) AS revenue

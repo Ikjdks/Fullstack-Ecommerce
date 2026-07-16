@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../../API/api.js";
+import {
+  Package,
+  Users,
+  ShoppingBag,
+  Wallet,
+  AlertTriangle,
+  XCircle,
+  Plus,
+  FolderPlus,
+  Eye,
+} from "lucide-react";
 
 import {
   LineChart,
@@ -51,92 +62,126 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
+    <div className="space-y-10">
+      {/* Header */}
 
-          <p className="text-muted-foreground">
-            Welcome back, here's what's happening today.
-          </p>
-        </div>
+      <div>
+        <h1 className="text-3xl sm:text-4xl font-bold">Dashboard</h1>
+
+        <p className="text-muted-foreground mt-2">
+          Welcome back, here's what's happening today.
+        </p>
       </div>
+
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-5">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Products</CardTitle>
-          </CardHeader>
 
-          <CardContent>
-            <p className="text-3xl font-bold">{stats.total_products || 0}</p>
-          </CardContent>
-        </Card>
+      <div
+        className="
+      grid
+      grid-cols-1
+      sm:grid-cols-2
+      xl:grid-cols-6
+      gap-5
+      "
+      >
+        {[
+          {
+            title: "Products",
+            value: stats.total_products || 0,
+            icon: Package,
+          },
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Customers</CardTitle>
-          </CardHeader>
+          {
+            title: "Customers",
+            value: stats.total_customers || 0,
+            icon: Users,
+          },
 
-          <CardContent>
-            <p className="text-3xl font-bold">{stats.total_customers || 0}</p>
-          </CardContent>
-        </Card>
+          {
+            title: "Orders",
+            value: stats.total_orders || 0,
+            icon: ShoppingBag,
+          },
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Orders</CardTitle>
-          </CardHeader>
+          {
+            title: "Revenue Today",
+            value: `${Number(revenue.today || 0).toLocaleString()} ETB`,
+            icon: Wallet,
+          },
 
-          <CardContent>
-            <p className="text-3xl font-bold">{stats.total_orders || 0}</p>
-          </CardContent>
-        </Card>
+          {
+            title: "Low Stock",
+            value: stats.low_stock_products || 0,
+            icon: AlertTriangle,
+          },
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Revenue Today</CardTitle>
-          </CardHeader>
+          {
+            title: "Out Of Stock",
+            value: stats.out_of_stock_products || 0,
+            icon: XCircle,
+          },
+        ].map((item) => {
+          const Icon = item.icon;
 
-          <CardContent>
-            <p className="text-3xl font-bold">
-              {Number(revenue.today || 0).toLocaleString()} ETB
-            </p>
-          </CardContent>
-        </Card>
+          return (
+            <Card
+              key={item.title}
+              className="
+            rounded-2xl
+            hover:shadow-md
+            transition
+            "
+            >
+              <CardHeader
+                className="
+              flex
+              flex-row
+              items-center
+              justify-between
+              pb-2
+              "
+              >
+                <CardTitle className="text-sm text-muted-foreground">
+                  {item.title}
+                </CardTitle>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Low Stock</CardTitle>
-          </CardHeader>
+                <Icon size={20} className="text-muted-foreground" />
+              </CardHeader>
 
-          <CardContent>
-            <p className="text-3xl font-bold text-orange-500">
-              {stats.low_stock_products || 0}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Out of Stock</CardTitle>
-          </CardHeader>
-
-          <CardContent>
-            <p className="text-3xl font-bold text-red-500">
-              {stats.out_of_stock_products || 0}
-            </p>
-          </CardContent>
-        </Card>
+              <CardContent>
+                <p className="text-3xl font-bold">{item.value}</p>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
-      {/* Revenue Chart + Quick Actions */}
-      <div className="grid lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
+
+      {/* Chart + Actions */}
+
+      <div
+        className="
+      grid
+      lg:grid-cols-3
+      gap-6
+      "
+      >
+        {/* Revenue Chart */}
+
+        <Card
+          className="
+        lg:col-span-2
+        rounded-2xl
+        "
+        >
           <CardHeader>
             <CardTitle>Revenue (Last 30 Days)</CardTitle>
           </CardHeader>
 
-          <CardContent className="h-[350px]">
+          <CardContent
+            className="
+          h-[350px]
+          "
+          >
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chart}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -164,83 +209,95 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* Quick Actions */}
+
+        <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
 
-          <CardContent className="space-y-3 flex flex-col items-center justify-center text-center ">
+          <CardContent className="space-y-3">
             <Button
-              className="w-50 h-8 text-xs flex items-center justify-center "
+              className="w-full gap-2"
               onClick={() => navigate("/admin/products/add")}
             >
-              + Add Product
+              <Plus size={16} />
+              Add Product
             </Button>
 
             <Button
               variant="outline"
-              className="w-50 h-8 text-xs flex items-center justify-center"
+              className="w-full gap-2"
               onClick={() => navigate("/admin/categories")}
             >
-              + Add Category
+              <FolderPlus size={16} />
+              Add Category
             </Button>
 
             <Button
               variant="outline"
-              className="w-50 h-8 text-xs flex items-center justify-center"
+              className="w-full gap-2"
               onClick={() => navigate("/admin/orders")}
             >
+              <Eye size={16} />
               View Orders
             </Button>
 
-            <div className="pt-6 border-t">
-              <h3 className="font-semibold mb-2">Revenue Summary</h3>
+            <div className="pt-6 mt-6 border-t">
+              <h3 className="font-semibold mb-4">Revenue Summary</h3>
 
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>This Week</span>
-                  <span className="font-medium">
-                    {Number(revenue.this_week || 0).toLocaleString()} ETB
-                  </span>
-                </div>
+              <div className="space-y-3 text-sm">
+                {[
+                  ["This Week", revenue.this_week],
+                  ["This Month", revenue.this_month],
+                  ["This Year", revenue.this_year],
+                  ["Total", revenue.total_revenue],
+                ].map(([name, value]) => (
+                  <div
+                    key={name}
+                    className="
+                    flex
+                    justify-between
+                    "
+                  >
+                    <span>{name}</span>
 
-                <div className="flex justify-between">
-                  <span>This Month</span>
-                  <span className="font-medium">
-                    {Number(revenue.this_month || 0).toLocaleString()} ETB
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>This Year</span>
-                  <span className="font-medium">
-                    {Number(revenue.this_year || 0).toLocaleString()} ETB
-                  </span>
-                </div>
-
-                <div className="border-t pt-2 flex justify-between font-semibold">
-                  <span>Total</span>
-
-                  <span>
-                    {Number(revenue.total_revenue || 0).toLocaleString()} ETB
-                  </span>
-                </div>
+                    <span className="font-medium">
+                      {Number(value || 0).toLocaleString()} ETB
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </CardContent>
         </Card>
-      </div>{" "}
-      {/* Bottom Section */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Low Stock Products */}
+      </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+      {/* Bottom Section */}
+
+      <div
+        className="
+      grid
+      lg:grid-cols-2
+      gap-6
+      "
+      >
+        {/* Low Stock */}
+
+        <Card className="rounded-2xl">
+          <CardHeader
+            className="
+          flex
+          flex-row
+          justify-between
+          items-center
+          "
+          >
             <CardTitle>Low Stock Products</CardTitle>
 
             <Button
-              variant="ghost"
               size="sm"
+              variant="ghost"
               onClick={() => navigate("/admin/products")}
             >
               View All
@@ -253,7 +310,7 @@ const Dashboard = () => {
                 All products have healthy stock 🎉
               </p>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {lowStock.map((product) => (
                   <div
                     key={product.id}
@@ -262,22 +319,21 @@ const Dashboard = () => {
                     flex
                     items-center
                     justify-between
-                    rounded-lg
                     border
+                    rounded-xl
                     p-3
                     cursor-pointer
-                    transition-colors
                     hover:bg-muted
+                    transition
                     "
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex gap-3 items-center">
                       <img
                         src={product.image_url}
-                        alt={product.title}
                         className="
                         w-12
                         h-12
-                        rounded-md
+                        rounded-lg
                         object-cover
                         "
                       />
@@ -291,7 +347,7 @@ const Dashboard = () => {
                       </div>
                     </div>
 
-                    <span className="font-semibold text-red-500">
+                    <span className="text-red-500 font-semibold">
                       {product.stock} left
                     </span>
                   </div>
@@ -303,13 +359,20 @@ const Dashboard = () => {
 
         {/* Recent Orders */}
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+        <Card className="rounded-2xl">
+          <CardHeader
+            className="
+          flex
+          flex-row
+          justify-between
+          items-center
+          "
+          >
             <CardTitle>Recent Orders</CardTitle>
 
             <Button
-              variant="ghost"
               size="sm"
+              variant="ghost"
               onClick={() => navigate("/admin/orders")}
             >
               View All
@@ -320,17 +383,16 @@ const Dashboard = () => {
             {recentOrders.length === 0 ? (
               <p className="text-sm text-muted-foreground">No recent orders.</p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {recentOrders.map((order) => (
                   <div
                     key={order.id}
                     className="
-                    flex
-                    items-center
-                    justify-between
-                    border-b
-                    pb-3
-                    "
+                  flex
+                  justify-between
+                  border-b
+                  pb-3
+                  "
                   >
                     <div>
                       <p className="font-medium">{order.name}</p>
@@ -345,18 +407,7 @@ const Dashboard = () => {
                         {Number(order.total_price).toLocaleString()} ETB
                       </p>
 
-                      <p
-                        className={`
-                        text-sm
-                        ${
-                          order.order_status === "delivered"
-                            ? "text-green-600"
-                            : order.order_status === "cancelled"
-                              ? "text-red-600"
-                              : "text-orange-500"
-                        }
-                        `}
-                      >
+                      <p className="text-sm text-muted-foreground">
                         {order.order_status}
                       </p>
                     </div>

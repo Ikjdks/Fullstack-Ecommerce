@@ -20,43 +20,82 @@ const Orders = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-10">
+    <div
+      className="
+    min-h-screen
+    bg-background
+    px-4
+    sm:px-6
+    py-8
+    sm:py-10
+    "
+    >
       <div className="max-w-5xl mx-auto">
-        <h1
-          className="
-        text-3xl
-        font-bold
-        mb-8
-      "
-        >
-          My Orders
-        </h1>
+        {/* Header */}
+
+        <div className="mb-8">
+          <h1
+            className="
+          text-3xl
+          sm:text-4xl
+          font-bold
+          "
+          >
+            My Orders
+          </h1>
+
+          <p
+            className="
+          text-muted-foreground
+          mt-2
+          "
+          >
+            Track your purchases and order history
+          </p>
+        </div>
 
         {orders.length === 0 ? (
           <div
             className="
-          bg-white
-          rounded-xl
+          bg-card
+          rounded-3xl
           border
           shadow-sm
           p-10
           text-center
-        "
+          "
           >
+            <div
+              className="
+            w-16
+            h-16
+            mx-auto
+            rounded-full
+            bg-secondary
+            flex
+            items-center
+            justify-center
+            text-3xl
+            mb-5
+            "
+            >
+              📦
+            </div>
+
             <h2
               className="
             text-2xl
             font-semibold
-          "
+            "
             >
               No orders yet
             </h2>
 
             <p
               className="
-            text-gray-500
+            text-muted-foreground
             mt-2
-          "
+            "
             >
               Your purchased products will appear here.
             </p>
@@ -68,40 +107,44 @@ const Orders = () => {
                 key={order.id}
                 onClick={() => navigate(`/order/${order.id}`)}
                 className="
-                bg-white
-                rounded-xl
-                border
-                shadow-sm
-                p-6
-                cursor-pointer
-                hover:shadow-md
-                transition
+              bg-card
+              rounded-3xl
+              border
+              shadow-sm
+              p-5
+              sm:p-6
+              cursor-pointer
+              hover:shadow-md
+              transition
               "
               >
                 <div
                   className="
                 flex
-                items-center
-                justify-between
-              "
+                flex-col
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+                gap-5
+                "
                 >
-                  {/* Left side */}
+                  {/* Product */}
 
                   <div
                     className="
                   flex
                   items-center
-                  gap-5
-                "
+                  gap-4
+                  "
                   >
                     <img
                       src={order.image_url}
                       alt={order.display_title}
                       className="
-                      w-20
-                      h-20
-                      rounded-xl
-                      object-cover
+                    w-20
+                    h-20
+                    rounded-2xl
+                    object-cover
                     "
                     />
 
@@ -110,7 +153,7 @@ const Orders = () => {
                         className="
                       font-semibold
                       text-lg
-                    "
+                      "
                       >
                         {order.display_title}
                       </h2>
@@ -118,9 +161,9 @@ const Orders = () => {
                       <p
                         className="
                       text-sm
-                      text-gray-500
+                      text-muted-foreground
                       mt-1
-                    "
+                      "
                       >
                         Order #{order.id}
                       </p>
@@ -128,43 +171,47 @@ const Orders = () => {
                       <p
                         className="
                       text-sm
-                      text-gray-500
-                    "
+                      text-muted-foreground
+                      "
                       >
                         {new Date(order.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
 
-                  {/* Right side */}
+                  {/* Price + Status */}
 
-                  <div className="text-right">
+                  <div
+                    className="
+                  sm:text-right
+                  "
+                  >
                     <p
                       className="
                     text-xl
                     font-bold
-                  "
+                    "
                     >
                       {order.total_price} ETB
                     </p>
 
                     <span
                       className={`
-                      inline-block
-                      mt-2
-                      px-3
-                      py-1
-                      rounded-full
-                      text-sm
-                      font-medium
+                    inline-block
+                    mt-2
+                    px-3
+                    py-1
+                    rounded-full
+                    text-sm
+                    font-medium
 
-                      ${
-                        order.order_status === "delivered"
-                          ? "bg-green-100 text-green-700"
-                          : order.order_status === "cancelled"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-yellow-100 text-yellow-700"
-                      }
+                    ${
+                      order.order_status === "delivered"
+                        ? "bg-emerald-100 text-emerald-700"
+                        : order.order_status === "cancelled"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-yellow-100 text-yellow-700"
+                    }
                     `}
                     >
                       {order.order_status}
@@ -178,13 +225,13 @@ const Orders = () => {
                 border-t
                 pt-4
                 text-right
-              "
+                "
                 >
                   <button
                     className="
-                    text-indigo-600
-                    font-medium
-                    hover:underline
+                  text-primary
+                  font-medium
+                  hover:underline
                   "
                   >
                     View Details →

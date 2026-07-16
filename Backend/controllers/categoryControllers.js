@@ -114,7 +114,20 @@ export const Delete = async (req, res) => {
     if (checkCategory.rows.length === 0) {
       return res.status(400).json({ msg: "Category not found" });
     }
+
+    await pool.query(
+      `
+      UPDATE products
+      SET 
+        status = 'draft',
+        category_id = NULL,
+        updated_at = NOW()
+      WHERE category_id = $1
+      `,
+      [id],
+    );
     await pool.query("delete from categories where id=$1", [id]);
+
     res.status(200).json({ msg: "Category deleted successfully" });
   } catch (error) {
     console.error(error);

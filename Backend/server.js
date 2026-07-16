@@ -10,6 +10,7 @@ import reviews from "./routes/reviewRoutes.js";
 import analytics from "./routes/analyticsRoute.js";
 import settings from "./routes/settingsRoute.js";
 import trueanalyticsRoutes from "./routes/Trueanalytics.js";
+import adminCustomerRoutes from "./routes/adminCustomer.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
@@ -39,7 +40,7 @@ app.use("/api/wishlist", wishlist);
 app.use("/api/reviews", reviews);
 app.use("/api/admin/analytics", analytics);
 app.use("/api/settings", settings);
-
+app.use("/api/admin/customers", adminCustomerRoutes);
 app.use("/api/trueanalytics", trueanalyticsRoutes);
 
 app.listen(PORT, () => {

@@ -1,40 +1,30 @@
 import { useEffect, useState } from "react";
 import API from "../../API/api.js";
 import { useNavigate } from "react-router-dom";
-
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 const Login = ({ user, setUser }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [form, setForm] = useState({ email: "", password: "" });
   useEffect(() => {
     if (user) {
       navigate("/");
     }
   }, [user, navigate]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       setError("");
-
       if (!form.email || !form.password) {
         setError("Please fill in all fields");
         return;
       }
-
       setLoading(true);
-
       const res = await API.post("/auth/login", form);
-
       setUser(res.data.user);
-
       navigate("/");
     } catch (error) {
       setError(
@@ -44,66 +34,103 @@ const Login = ({ user, setUser }) => {
       setLoading(false);
     }
   };
-
   return (
     <div
       className="
     min-h-screen
-    bg-gray-50
+    bg-background
     flex
     items-center
     justify-center
-    px-6
-  "
+    px-4
+    sm:px-6
+    "
     >
       <div
         className="
       w-full
       max-w-md
-      bg-white
-      rounded-2xl
-      shadow-lg
+      bg-card
       border
-      p-8
-    "
+      rounded-3xl
+      shadow-sm
+      p-6
+      sm:p-8
+      "
       >
+        {/* Back Button */}
+
         <button
           type="button"
           onClick={() => navigate(-1)}
           className="
-      flex
-      items-center
-      gap-2
-      text-gray-600
-      hover:text-indigo-600
-      mb-6
-      transition
-    "
+        flex
+        items-center
+        gap-2
+        text-muted-foreground
+        hover:text-primary
+        transition
+        mb-8
+        "
         >
           ← Go back
         </button>
+
+        {/* Header */}
+
         <div className="text-center mb-8">
+          <div
+            className="
+          mx-auto
+          w-14
+          h-14
+          rounded-2xl
+          bg-primary
+          text-primary-foreground
+          flex
+          items-center
+          justify-center
+          font-bold
+          text-xl
+          mb-5
+          "
+          >
+            E
+          </div>
+
           <h1
             className="
           text-3xl
           font-bold
-        "
+          text-foreground
+          "
           >
             Welcome Back
           </h1>
+
+          <p
+            className="
+          text-muted-foreground
+          mt-2
+          "
+          >
+            Login to continue shopping
+          </p>
         </div>
 
         {error && (
           <div
             className="
-          bg-red-100
-          text-red-700
+          bg-red-50
+          text-red-600
+          border
+          border-red-200
           px-4
           py-3
-          rounded-lg
+          rounded-xl
           mb-5
           text-sm
-        "
+          "
           >
             {error}
           </div>
@@ -111,108 +138,76 @@ const Login = ({ user, setUser }) => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label
-              className="
-            text-sm
-            font-medium
-          "
-            >
-              Email
-            </label>
+            <Label>Email</Label>
 
-            <input
+            <Input
               type="email"
               placeholder="Enter your email"
               value={form.email}
+              className="
+            mt-2
+            rounded-xl
+            "
               onChange={(e) =>
                 setForm({
                   ...form,
                   email: e.target.value,
                 })
               }
-              className="
-              mt-2
-              w-full
-              border
-              rounded-lg
-              px-4
-              py-3
-              outline-none
-              focus:ring-2
-              focus:ring-indigo-500
-            "
             />
           </div>
 
           <div>
-            <label
-              className="
-            text-sm
-            font-medium
-          "
-            >
-              Password
-            </label>
+            <Label>Password</Label>
 
-            <input
+            <Input
               type="password"
               placeholder="Enter your password"
               value={form.password}
+              className="
+            mt-2
+            rounded-xl
+            "
               onChange={(e) =>
                 setForm({
                   ...form,
                   password: e.target.value,
                 })
               }
-              className="
-              mt-2
-              w-full
-              border
-              rounded-lg
-              px-4
-              py-3
-              outline-none
-              focus:ring-2
-              focus:ring-indigo-500
-            "
             />
           </div>
 
-          <button
+          <Button
             type="submit"
             disabled={loading}
             className="
-            w-full
-            bg-indigo-600
-            hover:bg-indigo-700
-            text-white
-            py-3
-            rounded-lg
-            font-semibold
-            transition
-            disabled:opacity-50
+          w-full
+          h-12
+          rounded-xl
+          text-base
           "
           >
             {loading ? "Logging in..." : "Login"}
-          </button>
+          </Button>
         </form>
 
         <p
           className="
         text-center
         text-sm
-        text-gray-500
+        text-muted-foreground
         mt-6
-      "
+        "
         >
           Don't have an account?
           <span
             onClick={() => navigate("/register")}
             className="
-            text-indigo-600
-            font-medium
-            cursor-pointer
-            ml-1
+          text-primary
+          font-medium
+          cursor-pointer
+          ml-1
+          hover:underline
           "
           >
             Register
@@ -222,5 +217,4 @@ const Login = ({ user, setUser }) => {
     </div>
   );
 };
-
 export default Login;

@@ -52,62 +52,99 @@ const Register = ({ user, setUser }) => {
     <div
       className="
     min-h-screen
-    bg-gray-50
+    bg-background
     flex
     items-center
     justify-center
-    px-6
-  "
+    px-4
+    sm:px-6
+    "
     >
       <div
         className="
       w-full
       max-w-md
-      bg-white
-      rounded-2xl
-      shadow-lg
+      bg-card
       border
-      p-8
-    "
+      rounded-3xl
+      shadow-sm
+      p-6
+      sm:p-8
+      "
       >
+        {/* Back Button */}
+
         <button
           type="button"
           onClick={() => navigate("/")}
           className="
-          flex
-          items-center
-          gap-2
-          text-gray-600
-          hover:text-indigo-600
-          mb-6
-          transition
+        flex
+        items-center
+        gap-2
+        text-muted-foreground
+        hover:text-primary
+        transition
+        mb-8
         "
         >
           ← Go back
         </button>
 
+        {/* Header */}
+
         <div className="text-center mb-8">
+          <div
+            className="
+          mx-auto
+          w-14
+          h-14
+          rounded-2xl
+          bg-primary
+          text-primary-foreground
+          flex
+          items-center
+          justify-center
+          font-bold
+          text-xl
+          mb-5
+          "
+          >
+            E
+          </div>
+
           <h1
             className="
           text-3xl
           font-bold
-        "
+          text-foreground
+          "
           >
             Create Account
           </h1>
+
+          <p
+            className="
+          text-muted-foreground
+          mt-2
+          "
+          >
+            Join EthioShopping today
+          </p>
         </div>
 
         {error && (
           <div
             className="
-          bg-red-100
-          text-red-700
+          bg-red-50
+          text-red-600
+          border
+          border-red-200
           px-4
           py-3
-          rounded-lg
+          rounded-xl
           mb-5
           text-sm
-        "
+          "
           >
             {error}
           </div>
@@ -128,15 +165,16 @@ const Register = ({ user, setUser }) => {
                 })
               }
               className="
-              mt-2
-              w-full
-              border
-              rounded-lg
-              px-4
-              py-3
-              outline-none
-              focus:ring-2
-              focus:ring-indigo-500
+            mt-2
+            w-full
+            border
+            rounded-xl
+            px-4
+            py-3
+            bg-background
+            outline-none
+            focus:ring-2
+            focus:ring-primary
             "
             />
           </div>
@@ -155,15 +193,16 @@ const Register = ({ user, setUser }) => {
                 })
               }
               className="
-              mt-2
-              w-full
-              border
-              rounded-lg
-              px-4
-              py-3
-              outline-none
-              focus:ring-2
-              focus:ring-indigo-500
+            mt-2
+            w-full
+            border
+            rounded-xl
+            px-4
+            py-3
+            bg-background
+            outline-none
+            focus:ring-2
+            focus:ring-primary
             "
             />
           </div>
@@ -182,15 +221,16 @@ const Register = ({ user, setUser }) => {
                 })
               }
               className="
-              mt-2
-              w-full
-              border
-              rounded-lg
-              px-4
-              py-3
-              outline-none
-              focus:ring-2
-              focus:ring-indigo-500
+            mt-2
+            w-full
+            border
+            rounded-xl
+            px-4
+            py-3
+            bg-background
+            outline-none
+            focus:ring-2
+            focus:ring-primary
             "
             />
           </div>
@@ -209,15 +249,16 @@ const Register = ({ user, setUser }) => {
                 })
               }
               className="
-              mt-2
-              w-full
-              border
-              rounded-lg
-              px-4
-              py-3
-              outline-none
-              focus:ring-2
-              focus:ring-indigo-500
+            mt-2
+            w-full
+            border
+            rounded-xl
+            px-4
+            py-3
+            bg-background
+            outline-none
+            focus:ring-2
+            focus:ring-primary
             "
             />
           </div>
@@ -226,15 +267,15 @@ const Register = ({ user, setUser }) => {
             type="submit"
             disabled={loading}
             className="
-            w-full
-            bg-indigo-600
-            hover:bg-indigo-700
-            text-white
-            py-3
-            rounded-lg
-            font-semibold
-            transition
-            disabled:opacity-50
+          w-full
+          bg-primary
+          hover:opacity-90
+          text-primary-foreground
+          h-12
+          rounded-xl
+          font-semibold
+          transition
+          disabled:opacity-50
           "
           >
             {loading ? "Creating account..." : "Register"}
@@ -245,18 +286,19 @@ const Register = ({ user, setUser }) => {
           className="
         text-center
         text-sm
-        text-gray-500
+        text-muted-foreground
         mt-6
-      "
+        "
         >
           Already have an account?
           <span
             onClick={() => navigate("/login")}
             className="
-            text-indigo-600
-            font-medium
-            cursor-pointer
-            ml-1
+          text-primary
+          font-medium
+          cursor-pointer
+          ml-1
+          hover:underline
           "
           >
             Login

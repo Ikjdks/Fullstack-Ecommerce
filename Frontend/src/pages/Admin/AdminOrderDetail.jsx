@@ -118,7 +118,9 @@ const AdminOrderDetail = () => {
 
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Order #{order.id}</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Order #{order.id}
+            </h1>
 
             <p className="text-gray-500 mt-1">
               Manage order details and delivery status
@@ -128,7 +130,12 @@ const AdminOrderDetail = () => {
           <Button
             variant="outline"
             onClick={() => navigate(-1)}
-            className="gap-2"
+            className="
+            gap-2
+            hover:bg-green-50
+            hover:border-green-600
+            hover:text-green-700
+          "
           >
             <ArrowLeft size={18} />
             Back
@@ -150,9 +157,10 @@ const AdminOrderDetail = () => {
             rounded-xl
             border
             p-5
+            shadow-sm
           "
           >
-            <CreditCard className="mb-3" />
+            <CreditCard className="mb-3 text-green-600" />
 
             <p className="text-gray-500 text-sm">Payment</p>
 
@@ -177,9 +185,10 @@ const AdminOrderDetail = () => {
             rounded-xl
             border
             p-5
+            shadow-sm
           "
           >
-            <Package className="mb-3" />
+            <Package className="mb-3 text-green-600" />
 
             <p className="text-gray-500 text-sm">Status</p>
 
@@ -194,7 +203,7 @@ const AdminOrderDetail = () => {
               ${statusColor(order.order_status)}
             `}
             >
-              {order.order_status}
+              {order.order_status.replace("_", " ")}
             </span>
           </div>
 
@@ -204,11 +213,14 @@ const AdminOrderDetail = () => {
             rounded-xl
             border
             p-5
+            shadow-sm
           "
           >
             <p className="text-gray-500 text-sm">Total</p>
 
-            <p className="text-2xl font-bold mt-2">${order.total_price}</p>
+            <p className="text-2xl font-bold mt-2">
+              {Number(order.total_price).toLocaleString()} ETB
+            </p>
           </div>
 
           <div
@@ -217,9 +229,10 @@ const AdminOrderDetail = () => {
             rounded-xl
             border
             p-5
+            shadow-sm
           "
           >
-            <CalendarDays className="mb-3" />
+            <CalendarDays className="mb-3 text-green-600" />
 
             <p className="text-gray-500 text-sm">Created</p>
 
@@ -236,6 +249,7 @@ const AdminOrderDetail = () => {
           bg-white
           rounded-xl
           border
+          shadow-sm
           p-6
           space-y-5
         "
@@ -274,6 +288,11 @@ const AdminOrderDetail = () => {
             <Button
               onClick={updateStatus}
               disabled={loading || status === order.order_status}
+              className="
+              bg-green-600
+              hover:bg-green-700
+              disabled:opacity-50
+            "
             >
               {loading ? "Updating..." : "Update Status"}
             </Button>
@@ -287,22 +306,25 @@ const AdminOrderDetail = () => {
           bg-white
           rounded-xl
           border
+          shadow-sm
           p-6
         "
         >
           <div className="flex items-center gap-2 mb-5">
-            <User />
+            <User className="text-green-600" />
 
-            <h2 className="text-xl font-bold">Customer</h2>
+            <h2 className="text-xl font-bold">Customer Information</h2>
           </div>
 
-          <p>
-            <strong>Name:</strong> {order.name}
-          </p>
+          <div className="space-y-3">
+            <p>
+              <strong>Name:</strong> {order.name}
+            </p>
 
-          <p>
-            <strong>Email:</strong> {order.email}
-          </p>
+            <p>
+              <strong>Email:</strong> {order.email}
+            </p>
+          </div>
         </div>
 
         {/* Products */}
@@ -312,6 +334,7 @@ const AdminOrderDetail = () => {
           bg-white
           rounded-xl
           border
+          shadow-sm
           p-6
         "
         >
@@ -322,24 +345,25 @@ const AdminOrderDetail = () => {
               <div
                 key={item.product_id}
                 className="
-                  flex
-                  items-center
-                  gap-5
-                  border
-                  rounded-xl
-                  p-4
-                  hover:bg-gray-50
-                "
+                flex
+                items-center
+                gap-5
+                border
+                rounded-xl
+                p-4
+                transition
+                hover:bg-green-50
+              "
               >
                 <img
                   src={item.image_url}
                   alt={item.title}
                   className="
-                    w-24
-                    h-24
-                    rounded-lg
-                    object-cover
-                  "
+                  w-24
+                  h-24
+                  rounded-lg
+                  object-cover
+                "
                 />
 
                 <div className="flex-1">
@@ -348,7 +372,18 @@ const AdminOrderDetail = () => {
                   <p className="text-gray-500">Quantity: {item.quantity}</p>
 
                   <p className="font-semibold mt-2">
-                    ${item.price_at_purchase}
+                    {Number(item.price_at_purchase).toLocaleString()} ETB
+                  </p>
+                </div>
+
+                <div className="text-right">
+                  <p className="text-sm text-gray-500">Subtotal</p>
+
+                  <p className="font-bold text-lg">
+                    {Number(
+                      item.price_at_purchase * item.quantity,
+                    ).toLocaleString()}{" "}
+                    ETB
                   </p>
                 </div>
               </div>

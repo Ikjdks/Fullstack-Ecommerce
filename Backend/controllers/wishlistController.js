@@ -80,7 +80,7 @@ export const remove = async (req, res) => {
 
     await pool.query(
       `DELETE FROM wishlist_items
-        WHERE cart_id = $1 AND product_id = $2`,
+        WHERE wishlist_id = $1 AND product_id = $2`,
       [wishlist_id, product_id],
     );
 

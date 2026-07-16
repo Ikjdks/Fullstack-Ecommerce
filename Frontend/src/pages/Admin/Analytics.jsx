@@ -13,8 +13,8 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
 } from "recharts";
 
 const Analytics = () => {
@@ -179,6 +179,8 @@ const Analytics = () => {
       >
         {/* CATEGORY PIE */}
 
+        {/* CATEGORY DONUT */}
+
         <div className="chart-card">
           <h2 className="chart-title">Sales By Category</h2>
 
@@ -190,10 +192,14 @@ const Analytics = () => {
                 nameKey="name"
                 cx="50%"
                 cy="50%"
+                innerRadius={70}
                 outerRadius={120}
-                label
+                paddingAngle={4}
+                label={({ name, percent }) =>
+                  `${name} ${(percent * 100).toFixed(0)}%`
+                }
               >
-                {analytics.revenueByCategory.map((item, index) => (
+                {analytics.revenueByCategory.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
@@ -201,7 +207,12 @@ const Analytics = () => {
                 ))}
               </Pie>
 
-              <Tooltip />
+              <Tooltip
+                formatter={(value) => [
+                  `ETB ${Number(value).toLocaleString()}`,
+                  "Revenue",
+                ]}
+              />
 
               <Legend />
             </PieChart>
@@ -235,17 +246,36 @@ const Analytics = () => {
         <h2 className="chart-title">Revenue Trend</h2>
 
         <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={analytics.revenueTrend}>
-            <CartesianGrid />
+          <AreaChart data={analytics.revenueTrend}>
+            <defs>
+              <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#2563eb" stopOpacity={0.8} />
+
+                <stop offset="95%" stopColor="#2563eb" stopOpacity={0.05} />
+              </linearGradient>
+            </defs>
+
+            <CartesianGrid strokeDasharray="3 3" />
 
             <XAxis dataKey="date" />
 
             <YAxis />
 
-            <Tooltip />
+            <Tooltip
+              formatter={(value) => [
+                `ETB ${Number(value).toLocaleString()}`,
+                "Revenue",
+              ]}
+            />
 
-            <Line type="monotone" dataKey="revenue" />
-          </LineChart>
+            <Area
+              type="monotone"
+              dataKey="revenue"
+              stroke="#2563eb"
+              strokeWidth={3}
+              fill="url(#colorRevenue)"
+            />
+          </AreaChart>
         </ResponsiveContainer>
       </div>
 
@@ -306,9 +336,18 @@ const Analytics = () => {
                 >
                   <td className="p-3">#{index + 1}</td>
 
-                  <td className="p-3">{product.title}</td>
+                  <td className="p-3">
+                    <div className="flex items-center">
+                      <img
+                        src={product.image_url}
+                        alt={product.title}
+                        className="w-12 h-12 object-cover rounded-md"
+                      />
+                      <p className="px-3">{product.title}</p>
+                    </div>
+                  </td>
 
-                  <td className="p-3">{product.sold} sold</td>
+                  <td className="px-3">{product.sold} sold</td>
 
                   <td className="p-3">
                     ETB {Number(product.revenue).toLocaleString()}

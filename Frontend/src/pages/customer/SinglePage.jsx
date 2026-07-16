@@ -1,9 +1,12 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+
 import API from "../../../API/api.js";
+
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Star } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 
@@ -12,24 +15,33 @@ const SinglePage = () => {
 
   const [user, setUser] = useState(null);
 
+  const [product, setProduct] = useState({});
+
+  const [recommendations, setRecommendations] = useState([]);
+
   const [reviews, setReviews] = useState([]);
+
   const [averageRating, setAverageRating] = useState(0);
+
   const [totalReviews, setTotalReviews] = useState(0);
 
   const [canReview, setCanReview] = useState(false);
-
-  const [product, setProduct] = useState({});
 
   const [quantity1, setQuantity] = useState(1);
 
   const [reviewForm, setReviewForm] = useState({
     id: null,
+
     rating: 5,
+
     title: "",
+
     comment: "",
   });
 
-  // Get current user
+  // =========================
+  // Get Current User
+  // =========================
 
   useEffect(() => {
     const getUser = async () => {
@@ -45,7 +57,9 @@ const SinglePage = () => {
     getUser();
   }, []);
 
-  // Fetch product
+  // =========================
+  // Fetch Product
+  // =========================
 
   const fetchProduct = async () => {
     try {
@@ -53,15 +67,27 @@ const SinglePage = () => {
 
       setProduct(res.data);
     } catch (error) {
-      console.log(error);
+      toast.error(error.response?.data?.message || "Failed to load product.");
     }
   };
 
-  useEffect(() => {
-    fetchProduct();
-  }, [productId]);
+  // =========================
+  // Fetch Recommendations
+  // =========================
 
-  // Fetch reviews
+  const fetchRecommendations = async () => {
+    try {
+      const res = await API.get(`/products/${productId.id}/recommendations`);
+
+      setRecommendations(res.data);
+    } catch (error) {
+      console.error("Failed to fetch recommendations", error);
+    }
+  };
+
+  // =========================
+  // Fetch Reviews
+  // =========================
 
   const fetchReviews = async () => {
     try {
@@ -73,9 +99,13 @@ const SinglePage = () => {
 
       setTotalReviews(res.data.total_reviews);
     } catch (error) {
-      console.log(error);
+      toast.error(error.response?.data?.message || "Failed to load reviews.");
     }
   };
+
+  // =========================
+  // Check Can Review
+  // =========================
 
   const checkReview = async () => {
     try {
@@ -87,27 +117,41 @@ const SinglePage = () => {
     }
   };
 
+  // =========================
+  // Load Page Data
+  // =========================
+
   useEffect(() => {
+    fetchProduct();
+
+    fetchRecommendations();
+
     fetchReviews();
 
     checkReview();
-  }, [productId]);
+  }, [productId.id]);
 
-  // Delete review
+  // =========================
+  // Delete Review
+  // =========================
 
   const deleteReview = async (id) => {
     try {
       await API.delete(`/reviews/${id}`);
 
+      toast.success("Review deleted successfully.");
+
       fetchReviews();
 
       checkReview();
     } catch (error) {
-      console.log(error.response?.data?.message);
+      toast.error(error.response?.data?.message || "Failed to delete review.");
     }
   };
 
-  // Edit button
+  // =========================
+  // Edit Review
+  // =========================
 
   const editReview = (review) => {
     setReviewForm({
@@ -121,7 +165,9 @@ const SinglePage = () => {
     });
   };
 
-  // Submit create/update
+  // =========================
+  // Submit Review
+  // =========================
 
   const submitReview = async () => {
     try {
@@ -133,6 +179,8 @@ const SinglePage = () => {
 
           comment: reviewForm.comment,
         });
+
+        toast.success("Review updated successfully.");
       } else {
         await API.post("/reviews", {
           product_id: product.product_id,
@@ -143,6 +191,8 @@ const SinglePage = () => {
 
           comment: reviewForm.comment,
         });
+
+        toast.success("Review submitted successfully.");
       }
 
       setReviewForm({
@@ -159,157 +209,312 @@ const SinglePage = () => {
 
       checkReview();
     } catch (error) {
-      console.log(error.response?.data?.message);
+      toast.error(error.response?.data?.message || "Failed to submit review.");
     }
   };
 
+  // =========================
+  // Add Cart
+  // =========================
+
   const addCarts = async (id) => {
     try {
-      await API.post("/cart/", {
+      const res = await API.post("/cart/", {
         product_id: id,
 
         quantity: quantity1,
       });
+
+      toast.success(res.data.message || "Product added to cart successfully.");
     } catch (error) {
-      console.log(error);
+      toast.error(
+        error.response?.data?.message || "Failed to add product to cart.",
+      );
     }
   };
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-10">
-      {/* Product Section */}
-      <div
+    <div className="min-h-screen bg-background px-5 sm:px-8 py-10">
+      {/* Product */}
+
+      <section
         className="
-        max-w-6xl
-        mx-auto
-        bg-white
-        rounded-2xl
-        shadow-sm
-        border
-        p-8
-        "
+      max-w-7xl
+      mx-auto
+      "
       >
-        <div className="grid md:grid-cols-2 gap-10">
+        <div
+          className="
+        grid
+        lg:grid-cols-2
+        gap-10
+        "
+        >
           {/* Image */}
 
           <div
             className="
+          bg-card
+          border
+          rounded-xl
+          shadow-sm
+          p-5
+          "
+          >
+            <div
+              className="
+            bg-muted
+            rounded-lg
+            p-6
             flex
             items-center
             justify-center
-            bg-gray-100
-            rounded-xl
-            p-6
             "
-          >
-            <img
-              src={product.image_url}
-              alt={product.title}
-              className="
+            >
+              <img
+                src={product.image_url}
+                alt={product.title}
+                className="
               w-full
-              max-h-[500px]
+              max-h-[550px]
               object-contain
-              rounded-xl
+              rounded-lg
               "
-            />
+              />
+            </div>
           </div>
 
           {/* Details */}
 
-          <div className="flex flex-col">
-            <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
+          <div
+            className="
+          bg-card
+          border
+          rounded-xl
+          shadow-sm
+          p-6
+          lg:p-8
+          "
+          >
+            <div className="space-y-5">
+              <div>
+                <p
+                  className="
+                text-sm
+                text-muted-foreground
+                "
+                >
+                  {product.category_name}
+                </p>
 
-            <p className="text-gray-600 mb-6">{product.description}</p>
+                <h1
+                  className="
+                text-3xl
+                sm:text-4xl
+                font-bold
+                mt-2
+                "
+                >
+                  {product.title}
+                </h1>
+              </div>
 
-            <div className="flex justify-between items-center mb-5">
-              <p className="text-3xl font-bold">${product.price}</p>
+              <p
+                className="
+              text-muted-foreground
+              leading-7
+              "
+              >
+                {product.description}
+              </p>
 
               <div
                 className="
-                w-8
-                h-8
-                rounded-full
-                border-2
-                "
-                style={{
-                  backgroundColor: product.color,
-                }}
-              />
-            </div>
-
-            <div className="space-y-2 mb-6">
-              <p>
-                <span className="font-semibold">Category:</span>{" "}
-                {product.category_name}
-              </p>
-
-              <p className="text-green-600 font-medium">
-                {product.stock} items available
-              </p>
-            </div>
-
-            {/* Quantity */}
-
-            <div className="flex items-center gap-5 mb-8">
-              <span className="font-semibold">Quantity:</span>
-
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  disabled={quantity1 === 1}
-                  onClick={() => setQuantity(quantity1 - 1)}
-                >
-                  -
-                </Button>
-
-                <span className="text-xl font-semibold">{quantity1}</span>
-
-                <Button
-                  variant="outline"
-                  disabled={quantity1 === product.stock}
-                  onClick={() => setQuantity(quantity1 + 1)}
-                >
-                  +
-                </Button>
-              </div>
-            </div>
-
-            <Button
-              className="
-              w-full
-              py-6
-              text-lg
-              bg-indigo-600
-              hover:bg-indigo-700
+              flex
+              items-center
+              justify-between
               "
-              onClick={() => addCarts(product.product_id)}
-            >
-              Add to Cart
-            </Button>
+              >
+                <p
+                  className="
+                text-3xl
+                font-bold
+                text-primary
+                "
+                >
+                  ${product.price}
+                </p>
+
+                <div
+                  className="
+                flex
+                items-center
+                gap-3
+                "
+                >
+                  <span
+                    className="
+                  text-sm
+                  text-muted-foreground
+                  "
+                  >
+                    Color
+                  </span>
+
+                  <div
+                    className="
+                  w-9
+                  h-9
+                  rounded-full
+                  border
+                  "
+                    style={{
+                      backgroundColor: product.color,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div
+                className="
+              flex
+              "
+              >
+                <span
+                  className="
+                rounded-full
+                bg-muted
+                px-4
+                py-2
+                text-sm
+                "
+                >
+                  {product.stock} items available
+                </span>
+              </div>
+
+              {/* Quantity */}
+
+              <div className="space-y-3">
+                <p
+                  className="
+                font-semibold
+                "
+                >
+                  Quantity
+                </p>
+
+                <div
+                  className="
+                flex
+                items-center
+                gap-4
+                "
+                >
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    disabled={quantity1 === 1}
+                    onClick={() => setQuantity(quantity1 - 1)}
+                  >
+                    -
+                  </Button>
+
+                  <span
+                    className="
+                  text-xl
+                  font-semibold
+                  "
+                  >
+                    {quantity1}
+                  </span>
+
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    disabled={quantity1 === product.stock}
+                    onClick={() => setQuantity(quantity1 + 1)}
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+
+              <Button
+                className="
+              w-full
+              h-12
+              text-base
+              "
+                onClick={() => addCarts(product.product_id)}
+              >
+                Add to Cart
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Reviews Section */}
+      {/* Reviews */}
 
-      <div
+      <section
         className="
-        max-w-6xl
-        mx-auto
-        mt-10
-        bg-white
-        rounded-2xl
-        shadow-sm
-        border
-        p-8
-        "
+      max-w-7xl
+      mx-auto
+      mt-12
+      bg-card
+      border
+      rounded-xl
+      shadow-sm
+      p-6
+      sm:p-8
+      "
       >
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold">Reviews</h2>
-
+        <div
+          className="
+        flex
+        justify-between
+        items-start
+        mb-8
+        "
+        >
           <div>
-            <p className="text-xl font-semibold">⭐ {averageRating}</p>
+            <h2
+              className="
+            text-2xl
+            font-bold
+            "
+            >
+              Customer Reviews
+            </h2>
 
-            <p className="text-gray-500 text-sm">{totalReviews} reviews</p>
+            <p
+              className="
+            text-muted-foreground
+            mt-1
+            "
+            >
+              What customers think about this product
+            </p>
+          </div>
+
+          <div className="text-right">
+            <p
+              className="
+            text-2xl
+            font-bold
+            "
+            >
+              ⭐ {averageRating}
+            </p>
+
+            <p
+              className="
+            text-sm
+            text-muted-foreground
+            "
+            >
+              {totalReviews} reviews
+            </p>
           </div>
         </div>
 
@@ -318,22 +523,26 @@ const SinglePage = () => {
         {(canReview || reviewForm.id) && (
           <div
             className="
-            border
-            rounded-xl
-            p-5
-            mb-8
-            "
+          bg-muted
+          rounded-xl
+          p-5
+          mb-8
+          "
           >
-            <h3 className="font-semibold text-lg mb-4">
-              {reviewForm.id ? "Edit Review" : "Write a review"}
+            <h3
+              className="
+            text-xl
+            font-semibold
+            mb-5
+            "
+            >
+              {reviewForm.id ? "Edit Review" : "Write a Review"}
             </h3>
-
-            {/* Rating */}
-
-            <div className="flex gap-2 mb-4">
+            <div className="flex gap-2 mb-5">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
+                  size={24}
                   onClick={() =>
                     setReviewForm({
                       ...reviewForm,
@@ -343,63 +552,77 @@ const SinglePage = () => {
                   className={
                     star <= reviewForm.rating
                       ? "cursor-pointer fill-yellow-400 text-yellow-400"
-                      : "cursor-pointer text-gray-300"
+                      : "cursor-pointer text-muted-foreground"
                   }
                 />
               ))}
             </div>
 
-            <Label>Title</Label>
+            <div className="space-y-4">
+              <div>
+                <Label>Title</Label>
 
-            <input
-              className="
-              border
-              rounded-lg
-              w-full
-              p-2
-              mb-4
-              "
-              value={reviewForm.title}
-              onChange={(e) =>
-                setReviewForm({
-                  ...reviewForm,
-                  title: e.target.value,
-                })
-              }
-            />
-
-            <Label>Comment</Label>
-
-            <Textarea
-              value={reviewForm.comment}
-              onChange={(e) =>
-                setReviewForm({
-                  ...reviewForm,
-                  comment: e.target.value,
-                })
-              }
-            />
-
-            <div className="flex gap-3 mt-4">
-              <Button onClick={submitReview}>
-                {reviewForm.id ? "Update Review" : "Submit Review"}
-              </Button>
-
-              {reviewForm.id && (
-                <Button
-                  variant="outline"
-                  onClick={() =>
+                <input
+                  className="
+                mt-2
+                w-full
+                rounded-lg
+                border
+                bg-background
+                px-4
+                py-3
+                outline-none
+                focus:ring-2
+                focus:ring-ring
+                "
+                  value={reviewForm.title}
+                  onChange={(e) =>
                     setReviewForm({
-                      id: null,
-                      rating: 5,
-                      title: "",
-                      comment: "",
+                      ...reviewForm,
+                      title: e.target.value,
                     })
                   }
-                >
-                  Cancel
+                />
+              </div>
+
+              <div>
+                <Label>Comment</Label>
+
+                <Textarea
+                  className="
+                mt-2
+                "
+                  value={reviewForm.comment}
+                  onChange={(e) =>
+                    setReviewForm({
+                      ...reviewForm,
+                      comment: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <Button onClick={submitReview}>
+                  {reviewForm.id ? "Update Review" : "Submit Review"}
                 </Button>
-              )}
+
+                {reviewForm.id && (
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      setReviewForm({
+                        id: null,
+                        rating: 5,
+                        title: "",
+                        comment: "",
+                      })
+                    }
+                  >
+                    Cancel
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -411,18 +634,29 @@ const SinglePage = () => {
             <div
               key={review.id}
               className="
-              border
-              rounded-xl
-              p-5
-              "
+            border
+            rounded-xl
+            p-5
+            bg-background
+            "
             >
-              {console.log("CURRENT USER:", user)}
-              {console.log("REVIEW:", review)}
-              <div className="flex justify-between">
+              <div
+                className="
+              flex
+              justify-between
+              gap-5
+              "
+              >
                 <div>
-                  <h3 className="font-semibold">{review.name}</h3>
+                  <h3
+                    className="
+                  font-semibold
+                  "
+                  >
+                    {review.name}
+                  </h3>
 
-                  <div className="flex">
+                  <div className="flex mt-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
                         key={star}
@@ -430,24 +664,49 @@ const SinglePage = () => {
                         className={
                           star <= review.rating
                             ? "fill-yellow-400 text-yellow-400"
-                            : "text-gray-300"
+                            : "text-muted-foreground"
                         }
                       />
                     ))}
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-500">
+                <p
+                  className="
+                text-sm
+                text-muted-foreground
+                "
+                >
                   {new Date(review.created_at).toLocaleDateString()}
                 </p>
               </div>
 
-              <h4 className="font-medium mt-3">{review.title}</h4>
+              <h4
+                className="
+              font-semibold
+              mt-4
+              "
+              >
+                {review.title}
+              </h4>
 
-              <p className="text-gray-600 mt-2">{review.comment}</p>
+              <p
+                className="
+              mt-2
+              text-muted-foreground
+              "
+              >
+                {review.comment}
+              </p>
 
               {user?.id === review.user_id && (
-                <div className="flex gap-2 mt-4">
+                <div
+                  className="
+                flex
+                gap-3
+                mt-5
+                "
+                >
                   <Button variant="outline" onClick={() => editReview(review)}>
                     Edit
                   </Button>
@@ -463,7 +722,110 @@ const SinglePage = () => {
             </div>
           ))}
         </div>
-      </div>
+      </section>
+
+      {/* Recommendations */}
+
+      {recommendations.length > 0 && (
+        <section
+          className="
+        max-w-7xl
+        mx-auto
+        mt-16
+        "
+        >
+          <div className="mb-8">
+            <h2
+              className="
+            text-3xl
+            font-bold
+            "
+            >
+              You may also like
+            </h2>
+
+            <p
+              className="
+            text-muted-foreground
+            mt-2
+            "
+            >
+              Similar products you might enjoy.
+            </p>
+          </div>
+
+          <div
+            className="
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          md:grid-cols-3
+          lg:grid-cols-5
+          gap-5
+          "
+          >
+            {recommendations.map((item) => (
+              <Link
+                key={item.id}
+                to={`/products/${item.id}`}
+                className="
+              group
+              bg-card
+              border
+              rounded-xl
+              overflow-hidden
+              shadow-sm
+              hover:shadow-md
+              transition
+              "
+              >
+                <img
+                  src={item.image_url}
+                  alt={item.title}
+                  className="
+                w-full
+                h-48
+                object-cover
+                group-hover:scale-105
+                transition
+                "
+                />
+
+                <div className="p-4">
+                  <h3
+                    className="
+                  font-semibold
+                  truncate
+                  "
+                  >
+                    {item.title}
+                  </h3>
+
+                  <p
+                    className="
+                  text-sm
+                  text-muted-foreground
+                  mt-1
+                  "
+                  >
+                    {item.category_name}
+                  </p>
+
+                  <p
+                    className="
+                  font-bold
+                  text-primary
+                  mt-3
+                  "
+                  >
+                    ${item.price}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

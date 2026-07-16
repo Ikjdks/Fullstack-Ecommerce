@@ -21,13 +21,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import { useState, useEffect } from "react";
 import API from "../../../../API/api.js";
 import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
+
 const Add = () => {
   const navigate = useNavigate();
+
   const [preview, setPreview] = useState(null);
+
   const [category, setCategory] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -44,21 +53,27 @@ const Add = () => {
     const fetchCategory = async () => {
       try {
         const res = await API.get("/category");
+
         const data = res.data.map((c) => ({
           id: c.id,
           name: c.name,
         }));
+
         setCategory(data);
-        console.log("mapped:", data);
       } catch (error) {
-        console.log(error, "error");
+        toast.error(
+          error.response?.data?.message || "Failed to load categories.",
+        );
       }
     };
+
     fetchCategory();
   }, []);
 
   const addProduct = async () => {
     try {
+      setLoading(true);
+
       const data = new FormData();
 
       data.append("title", form.title);
@@ -73,10 +88,13 @@ const Add = () => {
 
       const res = await API.post("/products", data);
 
-      console.log(res.data);
+      toast.success(res.data.message || "Product added successfully.");
+
       navigate("/products");
     } catch (error) {
-      console.log(error, "error2");
+      toast.error(error.response?.data?.message || "Failed to add product.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,6 +103,7 @@ const Add = () => {
 
     if (!file) {
       setPreview(null);
+
       return;
     }
 
@@ -98,6 +117,11 @@ const Add = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80">
+          <Spinner className="size-6" />
+        </div>
+      )}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Section */}
         <div className="lg:col-span-2 space-y-8">

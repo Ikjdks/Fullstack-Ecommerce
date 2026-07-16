@@ -7,6 +7,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
+
 import {
   Select,
   SelectContent,
@@ -58,12 +61,15 @@ const AdminOrders = () => {
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        setLoading(true);
+
         const res = await API.get("orders/admin/orders", {
           params: {
             ...form,
@@ -75,7 +81,9 @@ const AdminOrders = () => {
         setOrders(res.data.orders);
         setTotalPages(res.data.totalPages);
       } catch (error) {
-        console.error(error);
+        toast.error(error.response?.data?.message || "Failed to load orders.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -127,7 +135,9 @@ const AdminOrders = () => {
         {/* Header */}
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Orders Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Orders Management
+          </h1>
 
           <p className="text-gray-500 mt-1">
             Manage customer orders, payments and delivery status.
@@ -164,9 +174,7 @@ const AdminOrders = () => {
                   </InputGroupAddon>
 
                   <InputGroupInput
-                    placeholder="
-                    Search order, customer, product...
-                    "
+                    placeholder="Search order, customer, product..."
                     value={form.search}
                     onChange={(e) =>
                       setForm({
@@ -246,7 +254,7 @@ const AdminOrders = () => {
         >
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50">
+              <TableRow className="bg-gray-50 hover:bg-green-50 transition-colors">
                 <TableHead>Customer</TableHead>
 
                 <TableHead>Product</TableHead>
@@ -264,22 +272,33 @@ const AdminOrders = () => {
             </TableHeader>
 
             <TableBody>
-              {orders.length === 0 ? (
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="py-10">
+                    <div className="flex justify-center">
+                      <Spinner className="size-8" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : orders.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={7}
                     className="
-                      text-center
-                      py-10
-                      text-gray-500
-                    "
+                    text-center
+                    py-10
+                    text-gray-500
+                  "
                   >
                     No orders found
                   </TableCell>
                 </TableRow>
               ) : (
                 orders.map((order) => (
-                  <TableRow key={order.id} className="hover:bg-gray-50">
+                  <TableRow
+                    key={order.id}
+                    className="hover:bg-green-50 transition-colors"
+                  >
                     <TableCell>
                       <div>
                         <p className="font-semibold">{order.name}</p>
@@ -300,11 +319,11 @@ const AdminOrders = () => {
                           src={order.image_url}
                           alt={order.title}
                           className="
-                            w-12
-                            h-12
-                            rounded-lg
-                            object-cover
-                          "
+                          w-12
+                          h-12
+                          rounded-lg
+                          object-cover
+                        "
                         />
 
                         <div>
@@ -318,7 +337,7 @@ const AdminOrders = () => {
                     </TableCell>
 
                     <TableCell className="font-semibold">
-                      ${order.total_price}
+                      {Number(order.total_price).toLocaleString()} ETB
                     </TableCell>
 
                     <TableCell>
@@ -359,8 +378,10 @@ const AdminOrders = () => {
                       <Button
                         size="sm"
                         className="
-                          gap-2
-                        "
+                        gap-2
+                        bg-green-600
+                        hover:bg-green-700
+                      "
                         onClick={() => navigate(`/admin/orders/${order.id}`)}
                       >
                         <Eye size={16} />
@@ -395,6 +416,7 @@ const AdminOrders = () => {
                   <PaginationLink
                     href="#"
                     isActive={page === index + 1}
+                    className="data-[active=true]:bg-green-600 data-[active=true]:text-white"
                     onClick={(e) => {
                       e.preventDefault();
 

@@ -11,9 +11,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 const Delete = ({ onSuccess, id }) => {
+  const [deletingId, setDeletingId] = useState(null);
   const deleteProduct = async (id) => {
     try {
+      setDeletingId(id);
       await API.delete(`/category/${id}`);
       onSuccess();
     } catch (error) {
@@ -41,7 +44,7 @@ const Delete = ({ onSuccess, id }) => {
             onClick={() => deleteProduct(id)}
             className="bg-red-500 text-white hover:bg-red-600 cursor-pointer"
           >
-            DELETE
+            {deletingId === id ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

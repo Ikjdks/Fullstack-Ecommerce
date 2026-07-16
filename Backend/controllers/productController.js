@@ -58,7 +58,9 @@ values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning *`,
 
 export const getColor = async (req, res) => {
   try {
-    const result = await pool.query(`select distinct color,id from products`);
+    const result = await pool.query(
+      `select distinct color,id from products where stock > 0 and status = 'published'`,
+    );
     return res.json(result.rows);
   } catch (error) {
     console.error(error);
@@ -392,6 +394,145 @@ export const getFeaturedProducts = async (req, res) => {
     res.json(result.rows);
   } catch (error) {
     console.error(error);
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+export const getRecommendations = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check product exists
+    const product = await pool.query(
+      `
+      SELECT category_id
+      FROM products
+      WHERE id=$1
+      `,
+      [id],
+    );
+
+    if (product.rows.length === 0) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    const category_id = product.rows[0].category_id;
+
+    /*
+      1. Customers also bought
+      Find products that appear in orders
+      containing this product
+    */
+
+    const boughtTogether = await pool.query(
+      `
+      SELECT 
+          p.id,
+          p.title,
+          p.price,
+          p.image_url,
+          c.name AS category_name,
+          COUNT(*) AS purchase_count
+
+      FROM order_items oi1
+
+
+      JOIN orders o
+      ON o.id = oi1.order_id
+
+
+      JOIN order_items oi2
+      ON oi2.order_id = o.id
+
+
+      JOIN products p
+      ON p.id = oi2.product_id
+
+
+      JOIN categories c
+      ON c.id = p.category_id
+
+
+      WHERE 
+          oi1.product_id = $1
+          AND oi2.product_id != $1
+          AND p.status='published'
+
+
+      GROUP BY 
+          p.id,
+          c.name
+
+
+      ORDER BY purchase_count DESC
+
+
+      LIMIT 5
+
+      `,
+      [id],
+    );
+
+    let recommendations = boughtTogether.rows;
+
+    /*
+      2. If not enough results,
+         add category recommendations
+    */
+
+    if (recommendations.length < 5) {
+      const needed = 5 - recommendations.length;
+
+      const existingIds = recommendations.map((item) => item.id);
+
+      const categoryProducts = await pool.query(
+        `
+        SELECT 
+            p.id,
+            p.title,
+            p.price,
+            p.image_url,
+            c.name AS category_name
+
+
+        FROM products p
+
+
+        JOIN categories c
+        ON c.id=p.category_id
+
+
+        WHERE
+            p.category_id=$1
+            AND p.id != $2
+            AND p.status='published'
+            ${
+              existingIds.length
+                ? `AND p.id NOT IN (${existingIds.join(",")})`
+                : ""
+            }
+
+
+        ORDER BY RANDOM()
+
+
+        LIMIT $3
+
+        `,
+        [category_id, id, needed],
+      );
+
+      recommendations = [...recommendations, ...categoryProducts.rows];
+    }
+
+    res.json(recommendations);
+  } catch (error) {
+    console.log(error);
+
     res.status(500).json({
       message: "Server error",
     });

@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -15,40 +16,69 @@ import { Label } from "@/components/ui/label";
 
 import API from "../../../../API/api.js";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 const Edit = ({ onSuccess, id }) => {
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name: "" });
+
+  const [loading, setLoading] = useState(false);
+
+  const [form, setForm] = useState({
+    name: "",
+  });
 
   useEffect(() => {
     const fetchCate = async () => {
       try {
         const res = await API.get(`/category/${id}`);
-        setForm({ name: res.data.name });
+
+        setForm({
+          name: res.data.name,
+        });
       } catch (error) {
-        console.error(error);
+        toast.error(
+          error.response?.data?.message || "Failed to load category.",
+        );
       }
     };
+
     fetchCate();
   }, [id]);
 
   const EditProduct = async (e) => {
     e.preventDefault();
-    console.log("running");
+
     try {
+      setLoading(true);
+
       const res = await API.put(`/category/${id}`, form);
-      console.log(res.data);
+
+      toast.success(res.data.message || "Category updated successfully.");
+
       onSuccess();
-      setForm({ name: "" });
+
+      setForm({
+        name: "",
+      });
+
       setOpen(false);
     } catch (error) {
-      console.error(error);
+      toast.error(
+        error.response?.data?.message || "Failed to update category.",
+      );
+    } finally {
+      setLoading(false);
     }
-    8;
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 z-50">
+          <Spinner className="size-6" />
+        </div>
+      )}
       <DialogTrigger
         render={
           <Button variant="outline" className="cursor-pointer">

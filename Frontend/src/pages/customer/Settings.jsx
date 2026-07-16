@@ -2,6 +2,7 @@ import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import API from "../../../API/api.js";
+import { toast } from "sonner";
 
 const Settings = () => {
   const [settings, setSettings] = useState({
@@ -23,9 +24,10 @@ const Settings = () => {
   const fetchInfo = async () => {
     try {
       const response = await API.get("/settings");
+
       setSettings(response.data);
     } catch (error) {
-      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to load settings.");
     }
   };
 
@@ -55,7 +57,7 @@ const Settings = () => {
         passwords.newPassword &&
         passwords.newPassword !== passwords.confirmPassword
       ) {
-        return alert("New passwords do not match.");
+        return toast.error("New passwords do not match.");
       }
 
       const formData = new FormData();
@@ -93,111 +95,232 @@ const Settings = () => {
       setAvatarFile(null);
       setPreview("");
 
-      alert("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
     } catch (error) {
-      console.error(error);
-      alert(error.response?.data?.message || "Something went wrong.");
+      toast.error(error.response?.data?.message || "Something went wrong.");
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
-      <h1 className="text-3xl font-bold">Settings</h1>
+    <div
+      className="
+    min-h-screen
+    bg-background
+    px-4
+    sm:px-6
+    py-8
+    sm:py-12
+    "
+    >
+      <div className="max-w-3xl mx-auto space-y-8">
+        {/* Header */}
 
-      {/* Profile */}
+        <div>
+          <h1
+            className="
+          text-3xl
+          sm:text-4xl
+          font-bold
+          "
+          >
+            Settings
+          </h1>
 
-      <div className="bg-white rounded-xl border p-6 space-y-4">
-        <h2 className="text-2xl font-semibold">Profile</h2>
+          <p
+            className="
+          text-muted-foreground
+          mt-2
+          "
+          >
+            Manage your account information and security.
+          </p>
+        </div>
 
-        <Input
-          placeholder="Name"
-          value={settings.name}
-          onChange={(e) =>
-            setSettings({
-              ...settings,
-              name: e.target.value,
-            })
-          }
-        />
+        {/* Profile Section */}
 
-        <Input
-          placeholder="Email"
-          type="email"
-          value={settings.email}
-          onChange={(e) =>
-            setSettings({
-              ...settings,
-              email: e.target.value,
-            })
-          }
-        />
+        <div
+          className="
+        bg-card
+        border
+        rounded-3xl
+        shadow-sm
+        p-5
+        sm:p-7
+        space-y-5
+        "
+        >
+          <h2
+            className="
+          text-xl
+          sm:text-2xl
+          font-bold
+          "
+          >
+            Profile Information
+          </h2>
 
-        <Input
-          placeholder="Phone"
-          value={settings.phone}
-          onChange={(e) =>
-            setSettings({
-              ...settings,
-              phone: e.target.value,
-            })
-          }
-        />
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Name</label>
 
-        <Field>
-          <FieldLabel>Profile Picture</FieldLabel>
+              <Input
+                className="mt-2"
+                placeholder="Name"
+                value={settings.name}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    name: e.target.value,
+                  })
+                }
+              />
+            </div>
 
-          <Input type="file" accept="image/*" onChange={handleImageChange} />
+            <div>
+              <label className="text-sm font-medium">Email</label>
 
-          <FieldDescription>
-            Upload a new image if you want to replace the current one.
-          </FieldDescription>
-        </Field>
+              <Input
+                className="mt-2"
+                placeholder="Email"
+                type="email"
+                value={settings.email}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    email: e.target.value,
+                  })
+                }
+              />
+            </div>
 
-        {(preview || settings.avatar) && (
-          <img
-            src={preview || settings.avatar}
-            alt={settings.name}
-            className="h-40 w-40 rounded-xl object-cover border"
+            <div>
+              <label className="text-sm font-medium">Phone</label>
+
+              <Input
+                className="mt-2"
+                placeholder="Phone"
+                value={settings.phone}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    phone: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </div>
+
+          {/* Avatar */}
+
+          <div
+            className="
+          border
+          rounded-2xl
+          p-4
+          space-y-4
+          "
+          >
+            <Field>
+              <FieldLabel>Profile Picture</FieldLabel>
+
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="mt-2"
+              />
+
+              <FieldDescription>
+                Upload a new image to update your profile picture.
+              </FieldDescription>
+            </Field>
+
+            {(preview || settings.avatar) && (
+              <img
+                src={preview || settings.avatar}
+                alt={settings.name}
+                className="
+              h-32
+              w-32
+              sm:h-40
+              sm:w-40
+              rounded-2xl
+              object-cover
+              border
+              "
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Security Section */}
+
+        <div
+          className="
+        bg-card
+        border
+        rounded-3xl
+        shadow-sm
+        p-5
+        sm:p-7
+        space-y-5
+        "
+        >
+          <h2
+            className="
+          text-xl
+          sm:text-2xl
+          font-bold
+          "
+          >
+            Security
+          </h2>
+
+          <Input
+            type="password"
+            name="currentPassword"
+            placeholder="Current password"
+            value={passwords.currentPassword}
+            onChange={handlePasswordChange}
           />
-        )}
+
+          <Input
+            type="password"
+            name="newPassword"
+            placeholder="New password"
+            value={passwords.newPassword}
+            onChange={handlePasswordChange}
+          />
+
+          <Input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm new password"
+            value={passwords.confirmPassword}
+            onChange={handlePasswordChange}
+          />
+        </div>
+
+        {/* Save Button */}
+
+        <button
+          onClick={handleSave}
+          className="
+        w-full
+        sm:w-auto
+        bg-primary
+        text-primary-foreground
+        px-8
+        py-3
+        rounded-xl
+        font-semibold
+        hover:opacity-90
+        transition
+        "
+        >
+          Save Changes
+        </button>
       </div>
-
-      {/* Security */}
-
-      <div className="bg-white rounded-xl border p-6 space-y-4">
-        <h2 className="text-2xl font-semibold">Security</h2>
-
-        <Input
-          type="password"
-          name="currentPassword"
-          placeholder="Current password"
-          value={passwords.currentPassword}
-          onChange={handlePasswordChange}
-        />
-
-        <Input
-          type="password"
-          name="newPassword"
-          placeholder="New password"
-          value={passwords.newPassword}
-          onChange={handlePasswordChange}
-        />
-
-        <Input
-          type="password"
-          name="confirmPassword"
-          placeholder="Repeat new password"
-          value={passwords.confirmPassword}
-          onChange={handlePasswordChange}
-        />
-      </div>
-
-      <button
-        onClick={handleSave}
-        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-      >
-        Save Changes
-      </button>
     </div>
   );
 };

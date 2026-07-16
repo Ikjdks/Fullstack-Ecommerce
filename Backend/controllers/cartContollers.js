@@ -46,7 +46,7 @@ export const createCart = async (req, res) => {
 
     if (currentQ + quantity > stock) {
       return res.status(400).json({
-        message: `only ${stock - currentQ} left in stock`,
+        message: `You can only add up to ${stock} of this product to your cart`,
       });
     }
 

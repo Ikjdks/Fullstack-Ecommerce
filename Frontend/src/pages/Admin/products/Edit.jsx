@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import { useState, useEffect } from "react";
 import API from "../../../../API/api.js";
 import { Switch } from "@/components/ui/switch";
@@ -38,10 +39,20 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
+
 const Edit = () => {
   const navigate = useNavigate();
+
   const [preview, setPreview] = useState(null);
+
   const [category, setCategory] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -58,23 +69,30 @@ const Edit = () => {
     const fetchCategory = async () => {
       try {
         const res = await API.get("/category");
+
         const data = res.data.map((c) => ({
           id: c.id,
           name: c.name,
         }));
+
         setCategory(data);
       } catch (error) {
-        console.log(error, "error");
+        toast.error(
+          error.response?.data?.message || "Failed to load categories.",
+        );
       }
     };
+
     fetchCategory();
   }, []);
 
   const { id } = useParams();
+
   useEffect(() => {
     const alreadyProduct = async () => {
       try {
         const res = await API.get(`/products/${id}`);
+
         setForm({
           id: res.data.id,
           title: res.data.title,
@@ -88,16 +106,18 @@ const Edit = () => {
           created_at: res.data.created_at,
           featured: res.data.featured,
         });
-        console.log(form);
       } catch (error) {
-        console.error(error);
+        toast.error(error.response?.data?.message || "Failed to load product.");
       }
     };
+
     alreadyProduct();
   }, [id]);
 
   const addProduct = async () => {
     try {
+      setLoading(true);
+
       const data = new FormData();
 
       data.append("title", form.title);
@@ -112,18 +132,29 @@ const Edit = () => {
 
       const res = await API.put(`/products/${id}`, data);
 
-      console.log(res.data);
-      navigate("/products");
+      toast.success(res.data.message || "Product updated successfully.");
+
+      navigate("/admin/products");
     } catch (error) {
-      console.log(error, "error2");
+      toast.error(error.response?.data?.message || "Failed to update product.");
+    } finally {
+      setLoading(false);
     }
   };
+
   const deleteProduct = async () => {
     try {
+      setDeleteLoading(true);
+
       await API.delete(`/products/${id}`);
+
+      toast.success("Product deleted successfully.");
+
       navigate("/products");
     } catch (error) {
-      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to delete product.");
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -132,6 +163,7 @@ const Edit = () => {
 
     if (!file) {
       setPreview(null);
+
       return;
     }
 
@@ -145,6 +177,11 @@ const Edit = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80">
+          <Spinner className="size-6" />
+        </div>
+      )}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Section */}
         <div className="lg:col-span-2 space-y-8">

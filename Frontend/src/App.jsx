@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
-
+import { Toaster } from "@/components/ui/sonner";
 import API from "../API/api.js";
 
 // layouts
@@ -26,7 +26,7 @@ import Settings from "./pages/customer/Settings";
 
 // admin
 import Dashboard from "./pages/Admin/Dashboard.jsx";
-import AdminRoute from "./pages/Admin/AdminRoute ";
+import AdminRoute from "./pages/Admin/AdminRoute.jsx";
 import Controllers from "./pages/Admin/Controllers";
 import Products from "./pages/Admin/Products";
 import Orders from "./pages/Admin/AdminOrders";
@@ -34,6 +34,7 @@ import AdminOrderDetail from "./pages/Admin/AdminOrderDetail";
 import Add from "./pages/Admin/products/Add";
 import Edit from "./pages/Admin/products/Edit";
 import Analytics from "./pages/Admin/Analytics";
+import Customers from "./pages/Admin/Customers";
 
 API.defaults.withCredentials = true;
 
@@ -163,6 +164,7 @@ function App() {
             path="products/add"
             element={<Add user={user} setUser={setUser} />}
           />
+          <Route path="customers" element={<Customers />} />
 
           <Route
             path="products/:id"
@@ -178,6 +180,7 @@ function App() {
           <Route path="analytics" element={<Analytics />} />
         </Route>
       </Routes>
+      <Toaster richColors position="top-right" />
     </Router>
   );
 }

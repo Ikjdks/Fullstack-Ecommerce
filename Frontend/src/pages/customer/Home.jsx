@@ -25,127 +25,292 @@ const Home = ({ user }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-background">
       {/* Hero */}
 
       <section
         className="
-        bg-white
-        px-5
-        sm:px-10
-        py-12
-        sm:py-20
-        flex
-        flex-col
-        lg:flex-row
-        justify-between
-        items-center
-        gap-10
-        "
+      max-w-7xl
+      mx-auto
+      px-5
+      sm:px-8
+      py-12
+      lg:py-20
+      "
       >
-        <div className="max-w-xl space-y-5 text-center lg:text-left">
-          <h1
-            className="
-            text-3xl
-            sm:text-5xl
-            font-bold
-            "
-          >
-            Discover Products You Love
-          </h1>
-
-          <p className="text-gray-600 text-base sm:text-lg">
-            Find high quality products at the best prices. Shop our latest
-            collection today.
-          </p>
-
-          <Link to="/products">
-            <Button>Shop Now</Button>
-          </Link>
-        </div>
-
-        <img
-          src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=764"
+        <div
           className="
-          w-full
-          sm:w-[450px]
-          rounded-xl
+        grid
+        lg:grid-cols-2
+        gap-10
+        items-center
+        "
+        >
+          {/* Hero Content */}
+
+          <div className="space-y-6">
+            <span
+              className="
+            inline-flex
+            items-center
+            rounded-full
+            bg-muted
+            px-4
+            py-2
+            text-sm
+            font-medium
+            text-primary
+            "
+            >
+              Premium shopping experience
+            </span>
+
+            <h1
+              className="
+            text-4xl
+            sm:text-5xl
+            lg:text-6xl
+            font-bold
+            tracking-tight
+            text-foreground
+            "
+            >
+              Discover products
+              <br />
+              you will love
+            </h1>
+
+            <p
+              className="
+            max-w-xl
+            text-lg
+            text-muted-foreground
+            "
+            >
+              Find high quality products at the best prices. Shop our latest
+              collection with a modern shopping experience.
+            </p>
+
+            <div className="flex gap-4">
+              <Link to="/products">
+                <Button
+                  size="lg"
+                  className="
+                rounded-lg
+                "
+                >
+                  Shop Now
+                </Button>
+              </Link>
+
+              <Link to="/products">
+                <Button variant="outline" size="lg">
+                  Explore Products
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Hero Image Card */}
+
+          <div
+            className="
+          relative
           "
-          alt="shopping"
-        />
+          >
+            <div
+              className="
+            bg-card
+            border
+            rounded-xl
+            shadow-sm
+            p-3
+            "
+            >
+              <img
+                src="https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=764"
+                alt="shopping"
+                className="
+              w-full
+              h-[420px]
+              object-cover
+              rounded-lg
+              "
+              />
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Welcome */}
 
-      <section className="p-5 sm:p-10 ">
-        <h2 className="text-xl sm:text-2xl font-semibold">
-          {user ? `Welcome back, ${user.name}` : "Welcome new customer"}
-        </h2>
-      </section>
-
-      {/* Products */}
-
-      <section className="px-5 sm:px-10 pb-20 ">
+      <section
+        className="
+      max-w-7xl
+      mx-auto
+      px-5
+      sm:px-8
+      "
+      >
         <div
           className="
-          flex
-          flex-col
-          sm:flex-row
-          justify-between
-          gap-3
-          mb-8
-          "
+        bg-card
+        border
+        rounded-xl
+        shadow-sm
+        p-6
+        "
         >
-          <h2 className="text-2xl sm:text-3xl font-bold">Featured Products</h2>
+          <h2
+            className="
+          text-xl
+          font-semibold
+          text-foreground
+          "
+          >
+            {user ? `Welcome back, ${user.name}` : "Welcome new customer"}
+          </h2>
 
-          <Link to="/products" className="text-blue-600">
+          <p
+            className="
+          mt-2
+          text-muted-foreground
+          "
+          >
+            Discover our newest products and exclusive collections.
+          </p>
+        </div>
+      </section>
+
+      {/* Featured Products */}
+
+      <section
+        className="
+      max-w-7xl
+      mx-auto
+      px-5
+      sm:px-8
+      py-16
+      "
+      >
+        <div
+          className="
+        flex
+        items-end
+        justify-between
+        mb-8
+        "
+        >
+          <div>
+            <h2
+              className="
+            text-3xl
+            font-bold
+            text-foreground
+            "
+            >
+              Featured Products
+            </h2>
+
+            <p
+              className="
+            mt-2
+            text-muted-foreground
+            "
+            >
+              Explore our latest available products.
+            </p>
+          </div>
+
+          <Link
+            to="/products"
+            className="
+          hidden
+          sm:block
+          text-primary
+          font-medium
+          hover:underline
+          "
+          >
             View All
           </Link>
         </div>
 
         {loading ? (
-          <p>Loading products...</p>
+          <div className="text-muted-foreground">Loading products...</div>
         ) : (
           <div
             className="
-            grid
-            grid-cols-1
-            sm:grid-cols-2
-            lg:grid-cols-4
-            gap-6
-            "
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          lg:grid-cols-4
+          gap-6
+          "
           >
             {featuredProducts.map((product) => (
               <Link
                 key={product.id}
                 to={`/products/${product.id}`}
                 className="
-                bg-white
-                rounded-xl
-                shadow
-                hover:shadow-lg
-                transition
+              group
+              bg-card
+              border
+              rounded-xl
+              overflow-hidden
+              shadow-sm
+              hover:shadow-md
+              transition
+              "
+              >
+                <div
+                  className="
                 overflow-hidden
                 "
-              >
-                <img
-                  src={product.image_url}
-                  alt={product.title}
-                  className="
+                >
+                  <img
+                    src={product.image_url}
+                    alt={product.title}
+                    className="
                   w-full
                   h-60
                   object-cover
+                  group-hover:scale-105
+                  transition
+                  duration-300
                   "
-                />
+                  />
+                </div>
 
-                <div className="p-4 space-y-2">
-                  <h3 className="font-semibold text-lg">{product.title}</h3>
+                <div className="p-5 space-y-3">
+                  <h3
+                    className="
+                  font-semibold
+                  text-lg
+                  text-foreground
+                  "
+                  >
+                    {product.title}
+                  </h3>
 
-                  <p className="text-sm text-gray-500">
+                  <p
+                    className="
+                  text-sm
+                  text-muted-foreground
+                  "
+                  >
                     {product.category_name}
                   </p>
 
-                  <p className="font-bold">${product.price}</p>
+                  <p
+                    className="
+                  text-xl
+                  font-bold
+                  text-primary
+                  "
+                  >
+                    ${product.price}
+                  </p>
                 </div>
               </Link>
             ))}

@@ -31,6 +31,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import { useState, useEffect } from "react";
 import API from "../../../API/api.js";
@@ -58,30 +59,41 @@ const Products = () => {
   // });
 
   const addCarts = async (id, quantity) => {
-    let product_id = id;
+    const product_id = id;
+
     if (quantity == null) {
       quantity = 1;
     }
+
     try {
       const res = await API.post("/cart", {
         product_id,
         quantity,
       });
-      console.log(res.data);
+
+      toast.success(res.data.message || "Product added to cart successfully.");
     } catch (error) {
-      console.log(error.response.data.message);
+      toast.error(
+        error.response?.data?.message || "Failed to add product to cart.",
+      );
     }
   };
 
   const addWishList = async (id) => {
-    let product_id = id;
+    const product_id = id;
+
     try {
       const res = await API.post("/wishlist", {
         product_id,
       });
-      console.log(res.data);
+
+      toast.success(
+        res.data.message || "Product added to wishlist successfully.",
+      );
     } catch (error) {
-      console.log(error.response.data.message);
+      toast.error(
+        error.response?.data?.message || "Failed to add product to wishlist.",
+      );
     }
   };
 
@@ -145,16 +157,54 @@ const Products = () => {
     fetchProducts();
   }, [page, form]);
 
-  // useEffect(() => {
-  //   console.log(products);
-  // }, [products]);
-
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-10">
+    <div className="min-h-screen bg-background px-5 sm:px-8 py-10">
+      {/* Header */}
+
+      <div className="max-w-7xl mx-auto mb-10">
+        <h1
+          className="
+        text-3xl
+        font-bold
+        text-foreground
+        "
+        >
+          Products
+        </h1>
+
+        <p
+          className="
+        mt-2
+        text-muted-foreground
+        "
+        >
+          Explore our collection and find something you love.
+        </p>
+      </div>
+
       {/* Filters */}
-      <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-sm border p-6 mb-8">
-        <div className="grid md:grid-cols-4 gap-5">
+
+      <div
+        className="
+      max-w-7xl
+      mx-auto
+      bg-card
+      border
+      rounded-xl
+      shadow-sm
+      p-6
+      mb-10
+      "
+      >
+        <div
+          className="
+        grid
+        md:grid-cols-4
+        gap-6
+        "
+        >
           {/* Search */}
+
           <div className="md:col-span-2">
             <Field>
               <InputGroup>
@@ -176,9 +226,23 @@ const Products = () => {
           </div>
 
           {/* Price */}
+
           <div>
-            <div className="flex justify-between mb-2">
-              <span className="text-sm text-gray-500">Max Price</span>
+            <div
+              className="
+            flex
+            justify-between
+            mb-3
+            "
+            >
+              <span
+                className="
+              text-sm
+              text-muted-foreground
+              "
+              >
+                Maximum Price
+              </span>
 
               <span className="font-semibold">${form.price}</span>
             </div>
@@ -197,6 +261,7 @@ const Products = () => {
           </div>
 
           {/* Category */}
+
           <Select
             value={form.category}
             onValueChange={(value) =>
@@ -207,7 +272,9 @@ const Products = () => {
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder="Category">
+                {category.find((c) => String(c.id) === form.category)?.name}
+              </SelectValue>
             </SelectTrigger>
 
             <SelectContent>
@@ -223,8 +290,24 @@ const Products = () => {
         </div>
 
         {/* Colors */}
-        <div className="mt-5 flex gap-3 items-center">
-          <span className="text-sm text-gray-500">Colors:</span>
+
+        <div
+          className="
+        mt-6
+        flex
+        items-center
+        gap-4
+        flex-wrap
+        "
+        >
+          <span
+            className="
+          text-sm
+          text-muted-foreground
+          "
+          >
+            Colors
+          </span>
 
           <button
             onClick={() =>
@@ -233,7 +316,15 @@ const Products = () => {
                 color: "all",
               })
             }
-            className="border rounded-full px-3 py-1 text-sm"
+            className="
+          border
+          rounded-full
+          px-4
+          py-1
+          text-sm
+          hover:bg-muted
+          transition
+          "
           >
             All
           </button>
@@ -248,17 +339,19 @@ const Products = () => {
                 })
               }
               className={`
-      w-8
-      h-8
-      rounded-full
-      border-2
-      transition
-      ${
-        form.color === c.color
-          ? "ring-2 ring-indigo-600 ring-offset-2"
-          : "hover:ring-2 hover:ring-gray-300"
-      }
-    `}
+            w-8
+            h-8
+            rounded-full
+            border-2
+            transition
+
+            ${
+              form.color === c.color
+                ? "ring-2 ring-primary ring-offset-2"
+                : "hover:ring-2 hover:ring-muted"
+            }
+
+            `}
               style={{
                 backgroundColor: c.color,
               }}
@@ -272,86 +365,94 @@ const Products = () => {
       <div className="max-w-7xl mx-auto">
         <div
           className="
-        grid 
-        sm:grid-cols-2 
-        lg:grid-cols-3 
-        xl:grid-cols-4 
+        grid
+        sm:grid-cols-2
+        lg:grid-cols-3
+        xl:grid-cols-4
         gap-6
-      "
+        "
         >
           {products.map((p) => (
             <div
               key={p.id}
               className="
-          bg-white 
-          rounded-xl 
+          group
+          bg-card
           border
-          shadow-sm
+          rounded-xl
           overflow-hidden
-          hover:shadow-lg
+          shadow-sm
+          hover:shadow-md
           transition
           "
             >
               {/* Image */}
+
               <div
                 onClick={() => navigate(`/products/${p.id}`)}
-                className="cursor-pointer"
+                className="
+            cursor-pointer
+            overflow-hidden
+            relative
+            "
               >
                 <img
                   src={p.image_url}
                   alt={p.title}
                   className="
               w-full
-              h-56
+              h-60
               object-cover
+              group-hover:scale-105
+              transition
+              duration-300
               "
                 />
               </div>
 
               {/* Content */}
-              <div className="p-5">
+
+              <div className="p-5 space-y-3">
                 <h2
                   className="
-            font-semibold
-            text-lg
-            truncate
-            "
+              text-lg
+              font-semibold
+              truncate
+              "
                 >
                   {p.title}
                 </h2>
 
                 <p
                   className="
-            text-gray-500
-            text-sm
-            mt-2
-            line-clamp-2
-            "
+              text-sm
+              text-muted-foreground
+              line-clamp-2
+              "
                 >
                   {p.description}
                 </p>
 
                 <div
                   className="
-            flex
-            justify-between
-            items-center
-            mt-4
-            "
-                >
-                  <p
-                    className="
-              text-xl
-              font-bold
+              flex
+              items-center
+              justify-between
               "
+                >
+                  <span
+                    className="
+                text-2xl
+                font-bold
+                "
                   >
                     ${p.price}
-                  </p>
+                  </span>
 
                   <div
                     className="
-                w-6
-                h-6
+                w-7
+                h-7
                 rounded-full
                 border
                 "
@@ -361,28 +462,32 @@ const Products = () => {
                   />
                 </div>
 
-                <p
-                  className="
-            text-sm
-            text-green-600
-            mt-3
-            "
-                >
-                  {p.stock} available
-                </p>
+                <div>
+                  <span
+                    className="
+                inline-flex
+                rounded-full
+                bg-muted
+                px-3
+                py-1
+                text-xs
+                text-muted-foreground
+                "
+                  >
+                    {p.stock} available
+                  </span>
+                </div>
 
-                <div
-                  className="
-            flex
-            gap-2
-            mt-5
-            "
-                >
+                <div className="flex gap-3 pt-2">
                   <Button className="flex-1" onClick={() => addCarts(p.id)}>
                     Add Cart
                   </Button>
 
-                  <Button variant="outline" onClick={() => addWishList(p.id)}>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => addWishList(p.id)}
+                  >
                     ♡
                   </Button>
                 </div>
@@ -393,7 +498,7 @@ const Products = () => {
 
         {/* Pagination */}
 
-        <div className="mt-10 flex justify-center">
+        <div className="mt-12 flex justify-center">
           <Pagination>
             <PaginationContent>
               <PaginationItem>

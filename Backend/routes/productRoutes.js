@@ -12,6 +12,7 @@ import {
   getProductsCustomer,
   getColor,
   getFeaturedProducts,
+  getRecommendations,
 } from "../controllers/productController.js";
 
 const router = express.Router();
@@ -27,6 +28,7 @@ router.post("/", protect, Admin, upload.single("image"), createProduct);
 router.get("/", protect, Admin, getProducts);
 
 // Parameterized routes LAST
+router.get("/:id/recommendations", getRecommendations);
 router.get("/:id", protect, Admin, getProduct);
 router.put("/:id", protect, Admin, upload.single("image"), updateProduct);
 router.delete("/:id", protect, Admin, deleteProduct);

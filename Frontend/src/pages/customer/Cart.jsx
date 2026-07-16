@@ -74,199 +74,278 @@ const Cart = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
+    <div
+      className="
+    min-h-screen
+    bg-background
+    px-4
+    sm:px-6
+    py-8
+    sm:py-12
+    "
+    >
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Cart Items */}
-        <div className="lg:col-span-2 space-y-5">
-          {cart.length === 0 ? (
-            <div className="bg-white rounded-2xl border shadow-sm p-12 text-center">
-              <div className="text-6xl mb-5">🛒</div>
+        <div className="mb-10">
+          <h1
+            className="
+          text-3xl
+          sm:text-4xl
+          font-bold
+          "
+          >
+            Shopping Cart
+          </h1>
 
-              <h2 className="text-2xl font-bold">Your cart is empty</h2>
+          <p className="text-muted-foreground mt-2">
+            Review your items before completing your purchase.
+          </p>
+        </div>
 
-              <p className="text-gray-500 mt-2">
-                Looks like you haven't added anything yet.
-              </p>
+        <div
+          className="
+        grid
+        lg:grid-cols-3
+        gap-8
+        "
+        >
+          {/* Cart Items */}
 
-              <button
+          <div
+            className="
+          lg:col-span-2
+          space-y-5
+          "
+          >
+            {cart.length === 0 ? (
+              <div
                 className="
-                mt-6
-                bg-indigo-600
-                hover:bg-indigo-700
-                transition
-                text-white
+              bg-card
+              rounded-3xl
+              border
+              p-12
+              text-center
+              shadow-sm
+              "
+              >
+                <div className="text-6xl mb-5">🛒</div>
+
+                <h2 className="text-2xl font-bold">Your cart is empty</h2>
+
+                <p className="text-muted-foreground mt-3">
+                  Looks like you haven't added anything yet.
+                </p>
+
+                <button
+                  onClick={() => navigate("/products")}
+                  className="
+                mt-7
+                bg-primary
+                text-primary-foreground
                 px-8
                 py-3
                 rounded-xl
                 font-semibold
-              "
-                onClick={() => navigate("/products")}
-              >
-                Browse Products
-              </button>
-            </div>
-          ) : (
-            cart.map((c) => (
-              <div
-                key={c.id}
-                className="
-                bg-white
-                rounded-2xl
+                hover:opacity-90
+                transition
+                "
+                >
+                  Browse Products
+                </button>
+              </div>
+            ) : (
+              cart.map((c) => (
+                <div
+                  key={c.id}
+                  className="
+                bg-card
+                rounded-3xl
                 border
-                shadow-sm
                 p-5
                 flex
                 gap-5
                 hover:shadow-md
                 transition
-              "
-              >
-                <img
-                  src={c.image_url}
-                  alt={c.title}
-                  className="
+                "
+                >
+                  <img
+                    src={c.image_url}
+                    alt={c.title}
+                    className="
                   w-32
                   h-32
-                  rounded-xl
+                  rounded-2xl
                   object-cover
-                "
-                />
+                  "
+                  />
 
-                <div className="flex-1">
-                  <div className="flex justify-between gap-4">
-                    <div>
-                      <h2 className="text-xl font-bold">{c.title}</h2>
+                  <div className="flex-1">
+                    <div className="flex justify-between gap-4">
+                      <div>
+                        <h2 className="text-xl font-bold">{c.title}</h2>
 
-                      <p className="text-gray-500 text-sm mt-2 line-clamp-2">
-                        {c.description}
-                      </p>
+                        <p
+                          className="
+                        text-sm
+                        text-muted-foreground
+                        mt-2
+                        line-clamp-2
+                        "
+                        >
+                          {c.description}
+                        </p>
 
-                      <p className="text-green-600 text-sm mt-3 font-medium">
-                        {c.stock} available
-                      </p>
-                    </div>
+                        <p
+                          className="
+                        text-emerald-600
+                        text-sm
+                        mt-3
+                        font-medium
+                        "
+                        >
+                          {c.stock} available
+                        </p>
+                      </div>
 
-                    <div className="text-right">
-                      <p className="text-2xl font-bold">${c.price}</p>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold">${c.price}</p>
 
-                      <button
-                        onClick={() => remove(c.product_id)}
-                        className="
+                        <button
+                          onClick={() => remove(c.product_id)}
+                          className="
                         text-red-500
                         text-sm
                         mt-3
-                        hover:text-red-700
-                      "
-                      >
-                        Remove
-                      </button>
+                        hover:text-red-600
+                        transition
+                        "
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="flex items-center justify-between mt-6">
-                    <span className="text-gray-500">Quantity</span>
 
                     <div
                       className="
+                    flex
+                    items-center
+                    justify-between
+                    mt-6
+                    "
+                    >
+                      <span className="text-muted-foreground">Quantity</span>
+
+                      <div
+                        className="
                       flex
                       items-center
                       gap-4
-                      border
+                      bg-secondary
                       rounded-full
-                      px-3
-                      py-1
-                    "
-                    >
-                      <button
-                        onClick={() => dec(c.product_id)}
-                        className="
-                        w-8
-                        h-8
-                        rounded-full
-                        hover:bg-gray-100
-                        text-lg
+                      px-4
+                      py-2
                       "
                       >
-                        -
-                      </button>
-
-                      <span className="font-semibold">{c.quantity}</span>
-
-                      <button
-                        disabled={c.quantity >= c.stock}
-                        onClick={() => inc(c.product_id)}
-                        className="
+                        <button
+                          onClick={() => dec(c.product_id)}
+                          className="
                         w-8
                         h-8
                         rounded-full
-                        hover:bg-gray-100
+                        hover:bg-card
+                        transition
+                        "
+                        >
+                          -
+                        </button>
+
+                        <span className="font-semibold">{c.quantity}</span>
+
+                        <button
+                          disabled={c.quantity >= c.stock}
+                          onClick={() => inc(c.product_id)}
+                          className="
+                        w-8
+                        h-8
+                        rounded-full
+                        hover:bg-card
+                        transition
                         disabled:opacity-40
-                        text-lg
-                      "
-                      >
-                        +
-                      </button>
+                        "
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
-          )}
-        </div>
+              ))
+            )}
+          </div>
 
-        {/* Order Summary */}
-        <div
-          className="
-          bg-white
-          rounded-2xl
+          {/* Summary */}
+
+          <div
+            className="
+          bg-card
+          rounded-3xl
           border
           shadow-sm
           p-7
           h-fit
           sticky
           top-24
-        "
-        >
-          <h2 className="text-2xl font-bold mb-7">Order Summary</h2>
+          "
+          >
+            <h2 className="text-2xl font-bold mb-7">Order Summary</h2>
 
-          <div className="space-y-4 text-gray-600">
-            <div className="flex justify-between">
-              <span>Items</span>
-              <span className="font-medium text-gray-900">{cart.length}</span>
+            <div className="space-y-5">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Items</span>
+
+                <span className="font-medium">{cart.length}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Shipping</span>
+
+                <span className="text-emerald-600 font-medium">Free</span>
+              </div>
+
+              <hr />
+
+              <div
+                className="
+              flex
+              justify-between
+              text-xl
+              font-bold
+              "
+              >
+                <span>Total</span>
+
+                <span>${totalAmount}</span>
+              </div>
             </div>
 
-            <div className="flex justify-between">
-              <span>Shipping</span>
-              <span className="text-green-600 font-medium">Free</span>
-            </div>
-          </div>
-
-          <hr className="my-6" />
-
-          <div className="flex justify-between text-xl font-bold">
-            <span>Total</span>
-
-            <span>${totalAmount}</span>
-          </div>
-
-          <button
-            className="
+            <button
+              onClick={() => navigate("/checkout")}
+              className="
             w-full
             mt-7
-            bg-indigo-600
-            hover:bg-indigo-700
-            transition
-            text-white
+            bg-primary
+            text-primary-foreground
             py-3
             rounded-xl
             font-semibold
-          "
-            onClick={() => navigate("/checkout")}
-          >
-            Proceed to Checkout
-          </button>
+            hover:opacity-90
+            transition
+            "
+            >
+              Proceed to Checkout
+            </button>
+          </div>
         </div>
       </div>
     </div>

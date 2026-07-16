@@ -43,40 +43,44 @@ const Success = () => {
     <div
       className="
     min-h-screen
-    bg-gray-50
+    bg-background
     flex
     items-center
     justify-center
-    px-6
-  "
+    px-4
+    sm:px-6
+    "
     >
       <div
         className="
-      bg-white
+      bg-card
       max-w-md
       w-full
-      rounded-2xl
-      shadow-lg
+      rounded-3xl
+      shadow-sm
       border
-      p-8
+      p-6
+      sm:p-8
       text-center
-    "
+      "
       >
         {!failed ? (
           <>
+            {/* Success Icon */}
+
             <div
               className="
             w-20
             h-20
             mx-auto
             rounded-full
-            bg-green-100
+            bg-emerald-100
             flex
             items-center
             justify-center
             text-4xl
             mb-6
-          "
+            "
             >
               ✓
             </div>
@@ -85,17 +89,17 @@ const Success = () => {
               className="
             text-3xl
             font-bold
-            text-green-600
-          "
+            text-emerald-600
+            "
             >
               Payment Successful
             </h1>
 
             <p
               className="
-            text-gray-500
+            text-muted-foreground
             mt-3
-          "
+            "
             >
               Thank you for your purchase. Your order has been confirmed.
             </p>
@@ -104,18 +108,19 @@ const Success = () => {
               <div
                 className="
               mt-6
-              bg-gray-100
-              rounded-lg
+              bg-secondary
+              rounded-xl
               p-4
-            "
+              "
               >
-                <p className="text-sm text-gray-500">Order Number</p>
+                <p className="text-sm text-muted-foreground">Order Number</p>
 
                 <p
                   className="
                 text-xl
                 font-bold
-              "
+                mt-1
+                "
                 >
                   #{orderId}
                 </p>
@@ -125,20 +130,23 @@ const Success = () => {
             <div
               className="
             flex
+            flex-col
+            sm:flex-row
             gap-3
             mt-6
-          "
+            "
             >
               <button
                 onClick={() => (window.location.href = `/order/${orderId}`)}
                 className="
-                flex-1
-                bg-indigo-600
-                hover:bg-indigo-700
-                text-white
-                py-3
-                rounded-lg
-                font-semibold
+              flex-1
+              bg-primary
+              hover:opacity-90
+              text-primary-foreground
+              py-3
+              rounded-xl
+              font-semibold
+              transition
               "
               >
                 View Order
@@ -147,12 +155,13 @@ const Success = () => {
               <button
                 onClick={() => (window.location.href = "/")}
                 className="
-                flex-1
-                border
-                py-3
-                rounded-lg
-                font-semibold
-                hover:bg-gray-100
+              flex-1
+              border
+              py-3
+              rounded-xl
+              font-semibold
+              hover:bg-secondary
+              transition
               "
               >
                 Continue Shopping
@@ -161,6 +170,8 @@ const Success = () => {
           </>
         ) : (
           <>
+            {/* Failed Icon */}
+
             <div
               className="
             w-20
@@ -173,7 +184,7 @@ const Success = () => {
             justify-center
             text-4xl
             mb-6
-          "
+            "
             >
               ✕
             </div>
@@ -183,16 +194,16 @@ const Success = () => {
             text-3xl
             font-bold
             text-red-600
-          "
+            "
             >
               Payment Failed
             </h1>
 
             <p
               className="
-            text-gray-500
+            text-muted-foreground
             mt-3
-          "
+            "
             >
               We couldn't verify your payment. Please try again.
             </p>
@@ -200,14 +211,15 @@ const Success = () => {
             <button
               onClick={() => (window.location.href = "/cart")}
               className="
-              w-full
-              mt-6
-              bg-indigo-600
-              hover:bg-indigo-700
-              text-white
-              py-3
-              rounded-lg
-              font-semibold
+            w-full
+            mt-6
+            bg-primary
+            hover:opacity-90
+            text-primary-foreground
+            py-3
+            rounded-xl
+            font-semibold
+            transition
             "
             >
               Return to Cart

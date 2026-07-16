@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.get("/", protect, show);
 router.post("/", protect, add);
-router.delete("/:id", protect, remove);
+router.delete("/:product_id", protect, remove);
 
 export default router;

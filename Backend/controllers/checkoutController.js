@@ -74,7 +74,7 @@ export const displayInfo = async (req, res) => {
 
     const user = await pool.query(
       `
-            select name,email from users where id=$1`,
+            select name,email,phone from users where id=$1`,
       [user_id],
     );
     res.status(200).json(user.rows[0]);
