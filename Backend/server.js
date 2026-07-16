@@ -11,6 +11,7 @@ import analytics from "./routes/analyticsRoute.js";
 import settings from "./routes/settingsRoute.js";
 import trueanalyticsRoutes from "./routes/Trueanalytics.js";
 import adminCustomerRoutes from "./routes/adminCustomer.js";
+import seedAdmin from "./routes/seedAdmin.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
@@ -43,6 +44,7 @@ app.use("/api/settings", settings);
 app.use("/api/admin/customers", adminCustomerRoutes);
 app.use("/api/trueanalytics", trueanalyticsRoutes);
 
+seedAdmin();
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
