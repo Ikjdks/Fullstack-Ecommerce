@@ -48,22 +48,6 @@ const Home = ({ user }) => {
           {/* Hero Content */}
 
           <div className="space-y-6">
-            <span
-              className="
-            inline-flex
-            items-center
-            rounded-full
-            bg-muted
-            px-4
-            py-2
-            text-sm
-            font-medium
-            text-primary
-            "
-            >
-              Premium shopping experience
-            </span>
-
             <h1
               className="
             text-4xl
