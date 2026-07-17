@@ -82,6 +82,9 @@ export const showCart = async (req, res, next) => {
       [user_id],
     );
 
+    if (cart.rows.length === 0) {
+      return res.status(200).json([]);
+    }
     const cart_id = cart.rows[0].id;
 
     // 2. Get cart items
@@ -190,6 +193,9 @@ export const ALLCART = async (req, res, next) => {
         WHERE user_id = $1`,
       [user_id],
     );
+    if (cart.rows.length === 0) {
+      return res.status(200).json([]);
+    }
     const cart_id = cart.rows[0].id;
 
     const totalAmount = await pool.query(
