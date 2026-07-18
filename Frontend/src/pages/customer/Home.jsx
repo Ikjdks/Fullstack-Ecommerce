@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import API from "../../../API/api.js";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 
 const Home = ({ user }) => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -220,7 +221,17 @@ const Home = ({ user }) => {
         </div>
 
         {loading ? (
-          <div className="text-muted-foreground">Loading products...</div>
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <Spinner className="size-8 mb-5" />
+
+            <h3 className="text-lg font-semibold">Waking up the server...</h3>
+
+            <p className="mt-2 max-w-md text-sm text-muted-foreground">
+              Please wait about <span className="font-medium">20 seconds</span>{" "}
+              while the free backend server starts. This only happens after the
+              server has been inactive for a while.
+            </p>
+          </div>
         ) : (
           <div
             className="
