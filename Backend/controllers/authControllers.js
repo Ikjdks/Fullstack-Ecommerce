@@ -14,8 +14,15 @@ const DEFAULT_AVATAR =
 const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   maxAge: 24 * 60 * 60 * 1000 * 5, // 5 days
+  partitioned: process.env.NODE_ENV === "production",
+};
+
+const clearCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   partitioned: process.env.NODE_ENV === "production",
 };
 
@@ -110,6 +117,6 @@ export const me = async (req, res, next) => {
 
 //logout
 export const logout = async (req, res, next) => {
-  res.clearCookie("token", cookieOptions);
+  res.clearCookie("token", clearCookieOptions);
   res.status(200).json({ msg: "User logged out successfully" });
 };

@@ -309,7 +309,7 @@ export const chapaPayment = async (req, res, next) => {
         first_name: name,
         tx_ref,
 
-        return_url: `http://localhost:5173/success?tx_ref=${tx_ref}`,
+        return_url: `https://fullstack-ecommerce-ashen.vercel.app/success?tx_ref=${tx_ref}`,
 
         customization: {
           title: "My Store",
