@@ -373,7 +373,7 @@ const Edit = () => {
                   }
                 />
 
-                <span className="text-sm text-gray-600 w-8">
+                <span className="text-sm text-gray-600 w-20">
                   {form.featured ? "Yes" : "No"}
                 </span>
               </div>
