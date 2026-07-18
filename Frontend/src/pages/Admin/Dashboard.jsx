@@ -50,7 +50,28 @@ const Dashboard = () => {
 
         setStats(statsRes.data);
         setRevenue(revenueRes.data);
-        setChart(chartRes.data);
+        // setChart(chartRes.data);
+
+        const chartData = [...chartRes.data];
+
+        if (chartData.length === 1) {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+
+          const yesterdayLabel = yesterday.toLocaleDateString("en-US", {
+            month: "short",
+            day: "2-digit",
+          });
+
+          chartData.unshift({
+            date: yesterdayLabel,
+            revenue: 0,
+          });
+        }
+
+        setChart(chartData);
+
+        ////////////////////////////////
         setLowStock(stockRes.data);
         setRecentOrders(ordersRes.data);
       } catch (error) {
