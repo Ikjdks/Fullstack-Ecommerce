@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import {
   Select,
@@ -50,6 +51,8 @@ const Edit = () => {
   const [category, setCategory] = useState([]);
 
   const [loading, setLoading] = useState(false);
+
+  const [pageLoading, setPageLoading] = useState(true);
 
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -91,6 +94,7 @@ const Edit = () => {
   useEffect(() => {
     const alreadyProduct = async () => {
       try {
+        setPageLoading(true);
         const res = await API.get(`/products/${id}`);
 
         setForm({
@@ -108,6 +112,8 @@ const Edit = () => {
         });
       } catch (error) {
         toast.error(error.response?.data?.message || "Failed to load product.");
+      } finally {
+        setPageLoading(false);
       }
     };
 
@@ -174,6 +180,98 @@ const Edit = () => {
       image: file,
     });
   };
+
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 px-6 py-10">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Header */}
+            <div className="space-y-3">
+              <Skeleton className="h-10 w-56" />
+              <Skeleton className="h-5 w-96" />
+            </div>
+
+            {/* Details */}
+            <div className="bg-white rounded-xl border shadow-sm p-6 space-y-6">
+              <Skeleton className="h-7 w-44" />
+
+              <div className="space-y-3">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+
+              <div className="space-y-3">
+                <Skeleton className="h-5 w-28" />
+                <Skeleton className="h-32 w-full" />
+              </div>
+            </div>
+
+            {/* Image */}
+            <div className="bg-white rounded-xl border shadow-sm p-6 space-y-5">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-11 w-full" />
+              <Skeleton className="h-5 w-80" />
+              <Skeleton className="h-48 w-48 rounded-xl" />
+            </div>
+          </div>
+
+          {/* Right */}
+          <div className="space-y-6">
+            {/* Actions */}
+            <div className="bg-white rounded-xl border shadow-sm p-6 space-y-4">
+              <div className="flex gap-3">
+                <Skeleton className="h-11 flex-1" />
+                <Skeleton className="h-11 flex-1" />
+              </div>
+
+              <Skeleton className="h-11 w-full" />
+            </div>
+
+            {/* Status */}
+            <div className="bg-white rounded-xl border shadow-sm p-6 space-y-6">
+              <div className="flex justify-between">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-6 w-14 rounded-full" />
+              </div>
+
+              <div className="flex justify-between">
+                <Skeleton className="h-5 w-20" />
+                <Skeleton className="h-6 w-14 rounded-full" />
+              </div>
+            </div>
+
+            {/* Inventory */}
+            <div className="bg-white rounded-xl border shadow-sm p-6 space-y-5">
+              <Skeleton className="h-6 w-32" />
+
+              <div>
+                <Skeleton className="h-5 w-20 mb-2" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+
+              <div>
+                <Skeleton className="h-5 w-20 mb-2" />
+                <Skeleton className="h-11 w-full" />
+              </div>
+            </div>
+
+            {/* Options */}
+            <div className="bg-white rounded-xl border shadow-sm p-6 space-y-5">
+              <Skeleton className="h-6 w-40" />
+
+              <Skeleton className="h-5 w-24" />
+              <Skeleton className="h-11 w-full" />
+
+              <Skeleton className="h-5 w-20" />
+              <Skeleton className="h-12 w-20" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">

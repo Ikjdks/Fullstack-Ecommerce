@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import API from "../../../API/api.js";
-
+import { Skeleton } from "@/components/ui/skeleton";
 const OrderDetails = () => {
   const { id } = useParams();
 
@@ -21,7 +21,114 @@ const OrderDetails = () => {
   }, [id]);
 
   if (!order) {
-    return <p>Loading...</p>;
+    return (
+      <div
+        className="
+      min-h-screen
+      bg-background
+      px-4
+      sm:px-6
+      py-8
+      sm:py-12
+      "
+      >
+        <div className="max-w-5xl mx-auto">
+          {/* Header Skeleton */}
+          <div className="flex justify-between items-center mb-8">
+            <div className="space-y-3">
+              <Skeleton className="h-10 w-64" />
+              <Skeleton className="h-4 w-48" />
+            </div>
+
+            <Skeleton className="h-8 w-28 rounded-full" />
+          </div>
+
+          {/* Order Information Skeleton */}
+          <div
+            className="
+          bg-card
+          border
+          rounded-2xl
+          shadow-sm
+          p-5
+          sm:p-7
+          mb-8
+          "
+          >
+            <Skeleton className="h-6 w-48 mb-6" />
+
+            <div className="grid sm:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-5 w-32" />
+              </div>
+
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-5 w-32" />
+              </div>
+
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-5 w-32" />
+              </div>
+            </div>
+          </div>
+
+          {/* Items Skeleton */}
+          <div
+            className="
+          bg-card
+          border
+          rounded-2xl
+          shadow-sm
+          p-5
+          sm:p-7
+          "
+          >
+            <Skeleton className="h-6 w-40 mb-6" />
+
+            <div className="space-y-5">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="
+                flex
+                gap-4
+                border-b
+                pb-5
+                "
+                >
+                  <Skeleton className="w-24 h-24 rounded-xl" />
+
+                  <div className="space-y-3 flex-1">
+                    <Skeleton className="h-5 w-48" />
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-4 w-40" />
+                  </div>
+
+                  <Skeleton className="h-6 w-24" />
+                </div>
+              ))}
+            </div>
+
+            {/* Total Skeleton */}
+            <div
+              className="
+            mt-8
+            border-t
+            pt-6
+            flex
+            justify-between
+            "
+            >
+              <Skeleton className="h-6 w-20" />
+              <Skeleton className="h-8 w-32" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

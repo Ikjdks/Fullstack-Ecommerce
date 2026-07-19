@@ -2,7 +2,10 @@ import API from "../../../API/api.js";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { Spinner } from "@/components/ui/spinner";
+
 const Cart = () => {
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [cart, setCart] = useState([]);
   const [p, setP] = useState(1);
@@ -10,31 +13,25 @@ const Cart = () => {
   const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
-    const fetchTotalCarts = async () => {
+    const fetchCartData = async () => {
       try {
-        const res = await API.get("/cart/all");
+        setLoading(true);
 
-        setTotalAmount(res.data.total);
+        const [cartRes, totalRes] = await Promise.all([
+          API.get("/cart"),
+          API.get("/cart/all"),
+        ]);
+
+        setCart(cartRes.data);
+        setTotalAmount(totalRes.data.total);
       } catch (error) {
-        console.log(error.response.data.message);
+        console.log(error.response?.data?.message);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchTotalCarts();
-  }, [p]);
-
-  useEffect(() => {
-    const fetchCarts = async () => {
-      try {
-        const res = await API.get("/cart");
-
-        setCart(res.data);
-      } catch (error) {
-        console.log(error.response.data.message);
-      }
-    };
-
-    fetchCarts();
+    fetchCartData();
   }, [p]);
 
   const remove = async (id) => {
@@ -118,7 +115,26 @@ const Cart = () => {
           space-y-5
           "
           >
-            {cart.length === 0 ? (
+            {loading ? (
+              <div
+                className="
+      bg-card
+      rounded-3xl
+      border
+      shadow-sm
+      py-20
+      px-6
+    "
+              >
+                <div className="flex flex-col items-center justify-center text-center">
+                  <Spinner className="size-8 mb-5" />
+
+                  <h3 className="text-lg font-semibold">
+                    Loading your cart...
+                  </h3>
+                </div>
+              </div>
+            ) : cart.length === 0 ? (
               <div
                 className="
               bg-card
@@ -325,7 +341,7 @@ const Cart = () => {
               >
                 <span>Total</span>
 
-                <span>${totalAmount}</span>
+                <span>${Number(totalAmount).toLocaleString()}</span>
               </div>
             </div>
 

@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../../API/api.js";
 import { toast } from "sonner";
-
+import { Spinner } from "@/components/ui/spinner";
 const Wishlist = () => {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const addCarts = async (id, quantity) => {
@@ -45,11 +46,15 @@ const Wishlist = () => {
 
   const fetchOrders = async () => {
     try {
+      setLoading(true);
+
       const res = await API.get("/wishlist/");
 
       setOrders(res.data);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to load wishlist.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,7 +102,11 @@ const Wishlist = () => {
           </div>
         </div>
 
-        {orders.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Spinner className="size-8" />
+          </div>
+        ) : orders.length === 0 ? (
           <div
             className="
           bg-card

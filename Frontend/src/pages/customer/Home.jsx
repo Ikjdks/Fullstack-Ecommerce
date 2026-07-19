@@ -221,88 +221,84 @@ const Home = ({ user }) => {
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <Spinner className="size-8 mb-5" />
-
-            <h3 className="text-lg font-semibold">Waking up the server...</h3>
-
-            <p className="mt-2 max-w-md text-sm text-muted-foreground">
-              Please wait about <span className="font-medium">20 seconds</span>{" "}
-              while the free backend server starts. This only happens after the
-              server has been inactive for a while.
-            </p>
+          <div
+            className="
+      bg-card
+      border
+      rounded-xl
+      shadow-sm
+      py-16
+      px-6
+    "
+          >
+            <div className="flex flex-col items-center justify-center text-center">
+              <Spinner className="size-8 mb-5" />
+            </div>
+          </div>
+        ) : featuredProducts.length === 0 ? (
+          <div
+            className="
+      bg-card
+      border
+      rounded-xl
+      shadow-sm
+      py-16
+      text-center
+      text-muted-foreground
+    "
+          >
+            No featured products found.
           </div>
         ) : (
           <div
             className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          lg:grid-cols-4
-          gap-6
-          "
+      grid
+      grid-cols-1
+      sm:grid-cols-2
+      lg:grid-cols-4
+      gap-6
+    "
           >
             {featuredProducts.map((product) => (
               <Link
                 key={product.id}
                 to={`/products/${product.id}`}
                 className="
-              group
-              bg-card
-              border
-              rounded-xl
-              overflow-hidden
-              shadow-sm
-              hover:shadow-md
-              transition
-              "
+          group
+          bg-card
+          border
+          rounded-xl
+          overflow-hidden
+          shadow-sm
+          hover:shadow-md
+          transition
+        "
               >
-                <div
-                  className="
-                overflow-hidden
-                "
-                >
+                <div className="overflow-hidden">
                   <img
                     src={product.image_url}
                     alt={product.title}
                     className="
-                  w-full
-                  h-60
-                  object-cover
-                  group-hover:scale-105
-                  transition
-                  duration-300
-                  "
+              w-full
+              h-60
+              object-cover
+              group-hover:scale-105
+              transition
+              duration-300
+            "
                   />
                 </div>
 
                 <div className="p-5 space-y-3">
-                  <h3
-                    className="
-                  font-semibold
-                  text-lg
-                  text-foreground
-                  "
-                  >
+                  <h3 className="font-semibold text-lg text-foreground">
                     {product.title}
                   </h3>
 
-                  <p
-                    className="
-                  text-sm
-                  text-muted-foreground
-                  "
-                  >
+                  <p className="text-sm text-muted-foreground">
                     {product.category_name}
                   </p>
 
-                  <p
-                    className="
-                  text-xl
-                  font-bold
-                  text-primary
-                  "
-                  >
+                  <p className="text-xl font-bold text-primary">
                     ${product.price}
                   </p>
                 </div>

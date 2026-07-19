@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../../API/api.js";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Package,
   Users,
@@ -35,10 +36,11 @@ const Dashboard = () => {
   const [chart, setChart] = useState([]);
   const [lowStock, setLowStock] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
+        setLoading(true);
         const [statsRes, revenueRes, chartRes, stockRes, ordersRes] =
           await Promise.all([
             API.get("/admin/analytics/stats"),
@@ -76,11 +78,114 @@ const Dashboard = () => {
         setRecentOrders(ordersRes.data);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchDashboard();
   }, []);
+  if (loading) {
+    return (
+      <div className="space-y-10">
+        {/* Header */}
+        <div className="space-y-3">
+          <Skeleton className="h-10 w-52" />
+          <Skeleton className="h-5 w-96" />
+        </div>
+
+        {/* Stats Cards */}
+        <div
+          className="
+        grid
+        grid-cols-1
+        sm:grid-cols-2
+        xl:grid-cols-6
+        gap-5
+        "
+        >
+          {[1, 2, 3, 4, 5, 6].map((item) => (
+            <Card key={item} className="rounded-2xl">
+              <CardHeader>
+                <Skeleton className="h-4 w-24" />
+              </CardHeader>
+
+              <CardContent>
+                <Skeleton className="h-10 w-20" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Chart + Actions */}
+        <div
+          className="
+        grid
+        lg:grid-cols-3
+        gap-6
+        "
+        >
+          <Card className="lg:col-span-2 rounded-2xl">
+            <CardHeader>
+              <Skeleton className="h-6 w-48" />
+            </CardHeader>
+
+            <CardContent>
+              <Skeleton className="h-[350px] w-full rounded-xl" />
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-2xl">
+            <CardHeader>
+              <Skeleton className="h-6 w-36" />
+            </CardHeader>
+
+            <CardContent className="space-y-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+
+              <Skeleton className="h-5 w-40 mt-5" />
+
+              {[1, 2, 3, 4].map((item) => (
+                <Skeleton key={item} className="h-5 w-full" />
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Bottom Cards */}
+        <div
+          className="
+        grid
+        lg:grid-cols-2
+        gap-6
+        "
+        >
+          {[1, 2].map((item) => (
+            <Card key={item} className="rounded-2xl">
+              <CardHeader>
+                <Skeleton className="h-6 w-44" />
+              </CardHeader>
+
+              <CardContent className="space-y-4">
+                {[1, 2, 3].map((row) => (
+                  <div key={row} className="flex items-center gap-3">
+                    <Skeleton className="h-12 w-12 rounded-lg" />
+
+                    <div className="space-y-2 flex-1">
+                      <Skeleton className="h-4 w-40" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-10">

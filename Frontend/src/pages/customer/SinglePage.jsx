@@ -7,10 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
-
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 
 const SinglePage = () => {
+  const [loading, setLoading] = useState(true);
   const productId = useParams();
 
   const [user, setUser] = useState(null);
@@ -122,13 +123,22 @@ const SinglePage = () => {
   // =========================
 
   useEffect(() => {
-    fetchProduct();
+    const loadPage = async () => {
+      try {
+        setLoading(true);
 
-    fetchRecommendations();
+        await Promise.all([
+          fetchProduct(),
+          fetchRecommendations(),
+          fetchReviews(),
+          checkReview(),
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    fetchReviews();
-
-    checkReview();
+    loadPage();
   }, [productId.id]);
 
   // =========================
@@ -270,16 +280,20 @@ const SinglePage = () => {
             justify-center
             "
             >
-              <img
-                src={product.image_url}
-                alt={product.title}
-                className="
-              w-full
-              max-h-[550px]
-              object-contain
-              rounded-lg
-              "
-              />
+              {loading ? (
+                <Skeleton className="w-full h-[550px] rounded-lg" />
+              ) : (
+                <img
+                  src={product.image_url}
+                  alt={product.title}
+                  className="
+      w-full
+      max-h-[550px]
+      object-contain
+      rounded-lg
+    "
+                />
+              )}
             </div>
           </div>
 
@@ -295,161 +309,179 @@ const SinglePage = () => {
           lg:p-8
           "
           >
-            <div className="space-y-5">
-              <div>
-                <p
-                  className="
+            {loading ? (
+              <div className="space-y-5">
+                <Skeleton className="h-4 w-24" />
+
+                <Skeleton className="h-10 w-3/4" />
+
+                <Skeleton className="h-24 w-full" />
+
+                <Skeleton className="h-8 w-32" />
+
+                <Skeleton className="h-8 w-40" />
+
+                <Skeleton className="h-10 w-40" />
+
+                <Skeleton className="h-12 w-full rounded-lg" />
+              </div>
+            ) : (
+              <div className="space-y-5">
+                <div>
+                  <p
+                    className="
                 text-sm
                 text-muted-foreground
                 "
-                >
-                  {product.category_name}
-                </p>
+                  >
+                    {product.category_name}
+                  </p>
 
-                <h1
-                  className="
+                  <h1
+                    className="
                 text-3xl
                 sm:text-4xl
                 font-bold
                 mt-2
                 "
-                >
-                  {product.title}
-                </h1>
-              </div>
+                  >
+                    {product.title}
+                  </h1>
+                </div>
 
-              <p
-                className="
+                <p
+                  className="
               text-muted-foreground
               leading-7
               "
-              >
-                {product.description}
-              </p>
-
-              <div
-                className="
-              flex
-              items-center
-              justify-between
-              "
-              >
-                <p
-                  className="
-                text-3xl
-                font-bold
-                text-primary
-                "
                 >
-                  ${product.price}
+                  {product.description}
                 </p>
 
                 <div
                   className="
+              flex
+              items-center
+              justify-between
+              "
+                >
+                  <p
+                    className="
+                text-3xl
+                font-bold
+                text-primary
+                "
+                  >
+                    ${product.price}
+                  </p>
+
+                  <div
+                    className="
                 flex
                 items-center
                 gap-3
                 "
-                >
-                  <span
-                    className="
+                  >
+                    <span
+                      className="
                   text-sm
                   text-muted-foreground
                   "
-                  >
-                    Color
-                  </span>
+                    >
+                      Color
+                    </span>
 
-                  <div
-                    className="
+                    <div
+                      className="
                   w-9
                   h-9
                   rounded-full
                   border
                   "
-                    style={{
-                      backgroundColor: product.color,
-                    }}
-                  />
+                      style={{
+                        backgroundColor: product.color,
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div
-                className="
+                <div
+                  className="
               flex
               "
-              >
-                <span
-                  className="
+                >
+                  <span
+                    className="
                 rounded-full
                 bg-muted
                 px-4
                 py-2
                 text-sm
                 "
-                >
-                  {product.stock} items available
-                </span>
-              </div>
+                  >
+                    {product.stock} items available
+                  </span>
+                </div>
 
-              {/* Quantity */}
+                {/* Quantity */}
 
-              <div className="space-y-3">
-                <p
-                  className="
+                <div className="space-y-3">
+                  <p
+                    className="
                 font-semibold
                 "
-                >
-                  Quantity
-                </p>
+                  >
+                    Quantity
+                  </p>
 
-                <div
-                  className="
+                  <div
+                    className="
                 flex
                 items-center
                 gap-4
                 "
-                >
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    disabled={quantity1 === 1}
-                    onClick={() => setQuantity(quantity1 - 1)}
                   >
-                    -
-                  </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      disabled={quantity1 === 1}
+                      onClick={() => setQuantity(quantity1 - 1)}
+                    >
+                      -
+                    </Button>
 
-                  <span
-                    className="
+                    <span
+                      className="
                   text-xl
                   font-semibold
                   "
-                  >
-                    {quantity1}
-                  </span>
+                    >
+                      {quantity1}
+                    </span>
 
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    disabled={quantity1 === product.stock}
-                    onClick={() => setQuantity(quantity1 + 1)}
-                  >
-                    +
-                  </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      disabled={quantity1 === product.stock}
+                      onClick={() => setQuantity(quantity1 + 1)}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
-              </div>
 
-              <Button
-                className="
+                <Button
+                  className="
               w-full
               h-12
               text-base
               "
-                onClick={() => addCarts(product.product_id)}
-              >
-                Add to Cart
-              </Button>
-            </div>
+                  onClick={() => addCarts(product.product_id)}
+                >
+                  Add to Cart
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -630,132 +662,197 @@ const SinglePage = () => {
         {/* Reviews List */}
 
         <div className="space-y-5">
-          {reviews.map((review) => (
-            <div
-              key={review.id}
-              className="
+          {loading ? (
+            [...Array(3)].map((_, index) => (
+              <div
+                key={index}
+                className="
+          border
+          rounded-xl
+          p-5
+          bg-background
+          space-y-4
+        "
+              >
+                <Skeleton className="h-5 w-40" />
+
+                <Skeleton className="h-4 w-24" />
+
+                <Skeleton className="h-5 w-48" />
+
+                <Skeleton className="h-4 w-full" />
+
+                <Skeleton className="h-4 w-5/6" />
+              </div>
+            ))
+          ) : reviews.length === 0 ? (
+            <div className="text-center py-10 text-muted-foreground">
+              No reviews yet.
+            </div>
+          ) : (
+            reviews.map((review) => (
+              <div
+                key={review.id}
+                className="
             border
             rounded-xl
             p-5
             bg-background
             "
-            >
-              <div
-                className="
+              >
+                <div
+                  className="
               flex
               justify-between
               gap-5
               "
-              >
-                <div>
-                  <h3
-                    className="
+                >
+                  <div>
+                    <h3
+                      className="
                   font-semibold
                   "
-                  >
-                    {review.name}
-                  </h3>
+                    >
+                      {review.name}
+                    </h3>
 
-                  <div className="flex mt-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        size={16}
-                        className={
-                          star <= review.rating
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "text-muted-foreground"
-                        }
-                      />
-                    ))}
+                    <div className="flex mt-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          size={16}
+                          className={
+                            star <= review.rating
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-muted-foreground"
+                          }
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <p
-                  className="
+                  <p
+                    className="
                 text-sm
                 text-muted-foreground
                 "
-                >
-                  {new Date(review.created_at).toLocaleDateString()}
-                </p>
-              </div>
+                  >
+                    {new Date(review.created_at).toLocaleDateString()}
+                  </p>
+                </div>
 
-              <h4
-                className="
+                <h4
+                  className="
               font-semibold
               mt-4
               "
-              >
-                {review.title}
-              </h4>
+                >
+                  {review.title}
+                </h4>
 
-              <p
-                className="
+                <p
+                  className="
               mt-2
               text-muted-foreground
               "
-              >
-                {review.comment}
-              </p>
+                >
+                  {review.comment}
+                </p>
 
-              {user?.id === review.user_id && (
-                <div
-                  className="
+                {user?.id === review.user_id && (
+                  <div
+                    className="
                 flex
                 gap-3
                 mt-5
                 "
-                >
-                  <Button variant="outline" onClick={() => editReview(review)}>
-                    Edit
-                  </Button>
-
-                  <Button
-                    variant="destructive"
-                    onClick={() => deleteReview(review.id)}
                   >
-                    Delete
-                  </Button>
-                </div>
-              )}
-            </div>
-          ))}
+                    <Button
+                      variant="outline"
+                      onClick={() => editReview(review)}
+                    >
+                      Edit
+                    </Button>
+
+                    <Button
+                      variant="destructive"
+                      onClick={() => deleteReview(review.id)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </section>
 
       {/* Recommendations */}
-
-      {recommendations.length > 0 && (
-        <section
+      {loading ? (
+        <div
           className="
+      grid
+      grid-cols-1
+      sm:grid-cols-2
+      md:grid-cols-3
+      lg:grid-cols-5
+      gap-5
+    "
+        >
+          {[...Array(5)].map((_, index) => (
+            <div
+              key={index}
+              className="
+          bg-card
+          border
+          rounded-xl
+          overflow-hidden
+        "
+            >
+              <Skeleton className="h-48 w-full" />
+
+              <div className="p-4 space-y-3">
+                <Skeleton className="h-5 w-3/4" />
+
+                <Skeleton className="h-4 w-1/2" />
+
+                <Skeleton className="h-5 w-20" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        recommendations.length > 0 && (
+          <section
+            className="
         max-w-7xl
         mx-auto
         mt-16
         "
-        >
-          <div className="mb-8">
-            <h2
-              className="
+          >
+            <div className="mb-8">
+              <h2
+                className="
             text-3xl
             font-bold
             "
-            >
-              You may also like
-            </h2>
+              >
+                You may also like
+              </h2>
 
-            <p
-              className="
+              <p
+                className="
             text-muted-foreground
             mt-2
             "
-            >
-              Similar products you might enjoy.
-            </p>
-          </div>
+              >
+                Similar products you might enjoy.
+              </p>
+            </div>
 
-          <div
-            className="
+            <div
+              className="
           grid
           grid-cols-1
           sm:grid-cols-2
@@ -763,12 +860,12 @@ const SinglePage = () => {
           lg:grid-cols-5
           gap-5
           "
-          >
-            {recommendations.map((item) => (
-              <Link
-                key={item.id}
-                to={`/products/${item.id}`}
-                className="
+            >
+              {recommendations.map((item) => (
+                <Link
+                  key={item.id}
+                  to={`/products/${item.id}`}
+                  className="
               group
               bg-card
               border
@@ -778,53 +875,54 @@ const SinglePage = () => {
               hover:shadow-md
               transition
               "
-              >
-                <img
-                  src={item.image_url}
-                  alt={item.title}
-                  className="
+                >
+                  <img
+                    src={item.image_url}
+                    alt={item.title}
+                    className="
                 w-full
                 h-48
                 object-cover
                 group-hover:scale-105
                 transition
                 "
-                />
+                  />
 
-                <div className="p-4">
-                  <h3
-                    className="
+                  <div className="p-4">
+                    <h3
+                      className="
                   font-semibold
                   truncate
                   "
-                  >
-                    {item.title}
-                  </h3>
+                    >
+                      {item.title}
+                    </h3>
 
-                  <p
-                    className="
+                    <p
+                      className="
                   text-sm
                   text-muted-foreground
                   mt-1
                   "
-                  >
-                    {item.category_name}
-                  </p>
+                    >
+                      {item.category_name}
+                    </p>
 
-                  <p
-                    className="
+                    <p
+                      className="
                   font-bold
                   text-primary
                   mt-3
                   "
-                  >
-                    ${item.price}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+                    >
+                      ${item.price}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )
       )}
     </div>
   );

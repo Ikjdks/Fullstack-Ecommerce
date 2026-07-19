@@ -6,8 +6,11 @@ import Add from "./controllers/Add.jsx";
 import Edit from "./controllers/Edit.jsx";
 import Delete from "./controllers/Delete.jsx";
 
+import { Spinner } from "@/components/ui/spinner";
+
 const Controllers = () => {
   const [category, setCategory] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [val, setVal] = useState(1);
 
@@ -18,7 +21,10 @@ const Controllers = () => {
   useEffect(() => {
     const fetchCategory = async () => {
       try {
+        setLoading(true);
+
         const res = await API.get("/category");
+
         setCategory(
           res.data.map((c) => ({
             id: c.id,
@@ -27,8 +33,11 @@ const Controllers = () => {
         );
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchCategory();
   }, [val]);
 
@@ -112,7 +121,11 @@ const Controllers = () => {
             </span>
           </div>
 
-          {category.length === 0 ? (
+          {loading ? (
+            <div className="py-16 flex justify-center">
+              <Spinner className="size-6" />
+            </div>
+          ) : category.length === 0 ? (
             <div
               className="
             py-16

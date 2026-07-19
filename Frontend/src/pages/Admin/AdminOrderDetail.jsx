@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../../../API/api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { Button } from "@/components/ui/button";
 
@@ -101,7 +102,125 @@ const AdminOrderDetail = () => {
 
   if (!order) {
     return (
-      <div className="p-10 text-center text-gray-500">Loading order...</div>
+      <div className="min-h-screen bg-gray-100 p-8">
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Header Skeleton */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-3">
+              <Skeleton className="h-10 w-64" />
+              <Skeleton className="h-5 w-80" />
+            </div>
+
+            <Skeleton className="h-10 w-28 rounded-lg" />
+          </div>
+
+          {/* Summary Cards */}
+          <div
+            className="
+          grid
+          md:grid-cols-4
+          gap-5
+        "
+          >
+            {[1, 2, 3, 4].map((item) => (
+              <div
+                key={item}
+                className="
+                bg-white
+                rounded-xl
+                border
+                p-5
+                shadow-sm
+                space-y-4
+              "
+              >
+                <Skeleton className="h-8 w-8 rounded-full" />
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-7 w-28" />
+              </div>
+            ))}
+          </div>
+
+          {/* Update Order Skeleton */}
+          <div
+            className="
+            bg-white
+            rounded-xl
+            border
+            shadow-sm
+            p-6
+            space-y-5
+          "
+          >
+            <Skeleton className="h-7 w-40" />
+
+            <div className="flex gap-4">
+              <Skeleton className="h-10 w-60 rounded-md" />
+              <Skeleton className="h-10 w-36 rounded-md" />
+            </div>
+          </div>
+
+          {/* Customer Skeleton */}
+          <div
+            className="
+            bg-white
+            rounded-xl
+            border
+            shadow-sm
+            p-6
+            space-y-5
+          "
+          >
+            <Skeleton className="h-7 w-56" />
+
+            <div className="space-y-3">
+              <Skeleton className="h-5 w-64" />
+              <Skeleton className="h-5 w-72" />
+            </div>
+          </div>
+
+          {/* Products Skeleton */}
+          <div
+            className="
+            bg-white
+            rounded-xl
+            border
+            shadow-sm
+            p-6
+            space-y-6
+          "
+          >
+            <Skeleton className="h-7 w-52" />
+
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="
+                flex
+                items-center
+                gap-5
+                border
+                rounded-xl
+                p-4
+              "
+              >
+                <Skeleton className="w-24 h-24 rounded-lg" />
+
+                <div className="flex-1 space-y-3">
+                  <Skeleton className="h-6 w-48" />
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-5 w-28" />
+                </div>
+
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-6 w-28" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     );
   }
 

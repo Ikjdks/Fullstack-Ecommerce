@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../../../API/api.js";
 
 import { toast } from "sonner";
-
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -233,7 +233,73 @@ const Customers = () => {
       "
       >
         {loading ? (
-          <p className="text-muted-foreground">Loading customers...</p>
+          <>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+              <div
+                key={item}
+                className="
+          bg-background
+          border
+          border-border
+          rounded-2xl
+          shadow-sm
+          p-5
+          space-y-4
+        "
+              >
+                {/* Profile Skeleton */}
+                <div className="flex items-center gap-4">
+                  <Skeleton
+                    className="
+              w-16
+              h-16
+              rounded-full
+            "
+                  />
+
+                  <div className="space-y-2">
+                    <Skeleton className="h-5 w-32" />
+
+                    <Skeleton className="h-5 w-20 rounded-full" />
+                  </div>
+                </div>
+
+                {/* Information Skeleton */}
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-5 w-44" />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-5 w-28" />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-5 w-32" />
+                  </div>
+                </div>
+
+                {/* Actions Skeleton */}
+                <div
+                  className="
+            flex
+            flex-col
+            gap-3
+            pt-3
+            border-t
+            border-border
+          "
+                >
+                  <Skeleton className="h-10 w-full rounded-lg" />
+
+                  <Skeleton className="h-10 w-full rounded-lg" />
+                </div>
+              </div>
+            ))}
+          </>
         ) : users.length === 0 ? (
           <p className="text-muted-foreground">No customers found.</p>
         ) : (

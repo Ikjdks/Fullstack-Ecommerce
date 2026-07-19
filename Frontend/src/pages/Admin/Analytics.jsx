@@ -16,6 +16,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Analytics = () => {
   const COLORS = [
@@ -27,7 +28,7 @@ const Analytics = () => {
     "#0891b2",
   ];
   const [range, setRange] = useState("30");
-
+  const [loading, setLoading] = useState(true);
   const [analytics, setAnalytics] = useState({
     revenue: 0,
     orders: 0,
@@ -41,6 +42,7 @@ const Analytics = () => {
 
   const fetchAnalytics = async () => {
     try {
+      setLoading(true);
       const res = await API.get(`/trueanalytics?range=${range}`);
 
       const data = res.data;
@@ -107,12 +109,139 @@ const Analytics = () => {
       });
     } catch (error) {
       console.error("Analytics Error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchAnalytics();
   }, [range]);
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-8">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div className="space-y-3">
+            <Skeleton className="h-10 w-48" />
+            <Skeleton className="h-5 w-64" />
+          </div>
+
+          <Skeleton className="h-10 w-36 rounded-lg" />
+        </div>
+
+        {/* Summary Cards */}
+        <div
+          className="
+        grid
+        grid-cols-1
+        md:grid-cols-4
+        gap-5
+        "
+        >
+          {[1, 2, 3, 4].map((item) => (
+            <div
+              key={item}
+              className="
+            bg-white
+            rounded-xl
+            border
+            shadow
+            p-5
+            space-y-4
+            "
+            >
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-8 w-28" />
+            </div>
+          ))}
+        </div>
+
+        {/* Pie + Bar Charts */}
+        <div
+          className="
+        grid
+        grid-cols-1
+        lg:grid-cols-2
+        gap-6
+        "
+        >
+          {[1, 2].map((item) => (
+            <div
+              key={item}
+              className="
+            bg-white
+            rounded-xl
+            border
+            shadow
+            p-6
+            "
+            >
+              <Skeleton className="h-6 w-44 mb-6" />
+
+              <Skeleton
+                className="
+              h-[350px]
+              w-full
+              rounded-xl
+              "
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Revenue Trend */}
+        <div
+          className="
+        bg-white
+        rounded-xl
+        border
+        shadow
+        p-6
+        "
+        >
+          <Skeleton className="h-6 w-40 mb-6" />
+
+          <Skeleton className="h-[400px] w-full rounded-xl" />
+        </div>
+
+        {/* Best Products Table */}
+        <div
+          className="
+        bg-white
+        rounded-xl
+        border
+        shadow
+        p-6
+        "
+        >
+          <Skeleton className="h-7 w-56 mb-6" />
+
+          <div className="space-y-5">
+            {[1, 2, 3, 4].map((item) => (
+              <div
+                key={item}
+                className="
+              flex
+              items-center
+              gap-4
+              "
+              >
+                <Skeleton className="h-12 w-12 rounded-md" />
+
+                <Skeleton className="h-5 w-48" />
+
+                <Skeleton className="h-5 w-24 ml-auto" />
+
+                <Skeleton className="h-5 w-32" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

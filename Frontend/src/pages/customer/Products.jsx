@@ -6,7 +6,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Slider } from "@/components/ui/slider";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // import {
 //   AlertDialog,
@@ -45,6 +45,7 @@ import {
 import { SearchIcon } from "lucide-react";
 
 const Products = () => {
+  const [loading, setLoading] = useState(false);
   const [imageStyle, setImageStyle] = useState({});
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -140,6 +141,8 @@ const Products = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true);
+
         const res = await API.get("/products/customer", {
           params: {
             ...form,
@@ -152,6 +155,9 @@ const Products = () => {
         setTotalPages(res.data.totalPages);
       } catch (error) {
         console.error(error);
+        toast.error("Failed to load products.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -423,8 +429,115 @@ const Products = () => {
       {/* Products */}
 
       <div className="max-w-7xl mx-auto">
-        <div
-          className="
+        {loading ? (
+          <div
+            className="
+      grid
+      sm:grid-cols-2
+      lg:grid-cols-3
+      xl:grid-cols-4
+      gap-5
+      sm:gap-6
+    "
+          >
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div
+                key={index}
+                className="
+          bg-card
+          border
+          rounded-2xl
+          overflow-hidden
+          shadow-sm
+        "
+              >
+                {/* Image Skeleton */}
+                <Skeleton
+                  className="
+            h-60
+            sm:h-64
+            w-full
+          "
+                />
+
+                {/* Content Skeleton */}
+                <div
+                  className="
+            p-4
+            sm:p-5
+            space-y-4
+          "
+                >
+                  {/* Title */}
+                  <Skeleton className="h-6 w-3/4" />
+
+                  {/* Description */}
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                  </div>
+
+                  {/* Price + Color */}
+                  <div className="flex items-center justify-between">
+                    <Skeleton className="h-8 w-24" />
+
+                    <Skeleton
+                      className="
+                h-7
+                w-7
+                rounded-full
+              "
+                    />
+                  </div>
+
+                  {/* Stock */}
+                  <Skeleton
+                    className="
+              h-6
+              w-28
+              rounded-full
+            "
+                  />
+
+                  {/* Buttons */}
+                  <div className="flex gap-3 pt-2">
+                    <Skeleton
+                      className="
+                h-10
+                flex-1
+                rounded-xl
+              "
+                    />
+
+                    <Skeleton
+                      className="
+                h-10
+                w-10
+                rounded-xl
+              "
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : products.length === 0 ? (
+          <div
+            className="
+      bg-card
+      border
+      rounded-2xl
+      shadow-sm
+      py-20
+      text-center
+      text-muted-foreground
+    "
+          >
+            No products found.
+          </div>
+        ) : (
+          <div
+            className="
         grid
         sm:grid-cols-2
         lg:grid-cols-3
@@ -432,11 +545,11 @@ const Products = () => {
         gap-5
         sm:gap-6
         "
-        >
-          {products.map((p) => (
-            <div
-              key={p.id}
-              className="
+          >
+            {products.map((p) => (
+              <div
+                key={p.id}
+                className="
               group
               bg-card
               border
@@ -447,14 +560,14 @@ const Products = () => {
               transition-all
               duration-300
               "
-            >
-              {/* Image */}
+              >
+                {/* Image */}
 
-              {/* Image */}
+                {/* Image */}
 
-              <div
-                onClick={() => navigate(`/products/${p.id}`)}
-                className="
+                <div
+                  onClick={() => navigate(`/products/${p.id}`)}
+                  className="
   cursor-pointer
   overflow-hidden
   bg-muted
@@ -464,34 +577,34 @@ const Products = () => {
   h-60
   sm:h-64
   "
-              >
-                <img
-                  src={p.image_url}
-                  alt={p.title}
-                  onLoad={(e) => {
-                    const img = e.currentTarget;
+                >
+                  <img
+                    src={p.image_url}
+                    alt={p.title}
+                    onLoad={(e) => {
+                      const img = e.currentTarget;
 
-                    const ratio = img.naturalWidth / img.naturalHeight;
+                      const ratio = img.naturalWidth / img.naturalHeight;
 
-                    let style = "object-cover";
+                      let style = "object-cover";
 
-                    if (ratio < 0.8) {
-                      // very tall image
-                      style = "object-contain";
-                    } else if (ratio > 1.5) {
-                      // very wide image
-                      style = "object-cover";
-                    } else {
-                      // normal image
-                      style = "object-cover";
-                    }
+                      if (ratio < 0.8) {
+                        // very tall image
+                        style = "object-contain";
+                      } else if (ratio > 1.5) {
+                        // very wide image
+                        style = "object-cover";
+                      } else {
+                        // normal image
+                        style = "object-cover";
+                      }
 
-                    setImageStyle((prev) => ({
-                      ...prev,
-                      [p.id]: style,
-                    }));
-                  }}
-                  className={`
+                      setImageStyle((prev) => ({
+                        ...prev,
+                        [p.id]: style,
+                      }));
+                    }}
+                    className={`
     w-full
     h-full
     transition
@@ -500,74 +613,74 @@ const Products = () => {
 
     ${imageStyle[p.id] || "object-cover"}
   `}
-                />
-              </div>
-              {/* Content */}
-              <div
-                className="
+                  />
+                </div>
+                {/* Content */}
+                <div
+                  className="
                 p-4
                 sm:p-5
                 space-y-4
                 "
-              >
-                <h2
-                  className="
+                >
+                  <h2
+                    className="
                   text-lg
                   font-semibold
                   truncate
                   "
-                >
-                  {p.title}
-                </h2>
+                  >
+                    {p.title}
+                  </h2>
 
-                <p
-                  className="
+                  <p
+                    className="
                   text-sm
                   text-muted-foreground
                   line-clamp-2
                   min-h-[40px]
                   "
-                >
-                  {p.description}
-                </p>
+                  >
+                    {p.description}
+                  </p>
 
-                {/* Price + Color */}
+                  {/* Price + Color */}
 
-                <div
-                  className="
+                  <div
+                    className="
                   flex
                   items-center
                   justify-between
                   "
-                >
-                  <span
-                    className="
+                  >
+                    <span
+                      className="
                     text-xl
                     sm:text-2xl
                     font-bold
                     "
-                  >
-                    ${p.price}
-                  </span>
+                    >
+                      ${p.price}
+                    </span>
 
-                  <div
-                    className="
+                    <div
+                      className="
                     w-7
                     h-7
                     rounded-full
                     border
                     "
-                    style={{
-                      backgroundColor: p.color,
-                    }}
-                  />
-                </div>
+                      style={{
+                        backgroundColor: p.color,
+                      }}
+                    />
+                  </div>
 
-                {/* Stock */}
+                  {/* Stock */}
 
-                <div>
-                  <span
-                    className="
+                  <div>
+                    <span
+                      className="
                     inline-flex
                     rounded-full
                     bg-muted
@@ -576,98 +689,100 @@ const Products = () => {
                     text-xs
                     text-muted-foreground
                     "
-                  >
-                    {p.stock} available
-                  </span>
-                </div>
+                    >
+                      {p.stock} available
+                    </span>
+                  </div>
 
-                {/* Buttons */}
+                  {/* Buttons */}
 
-                <div
-                  className="
+                  <div
+                    className="
                   flex
                   gap-3
                   pt-2
                   "
-                >
-                  <Button
-                    className="
+                  >
+                    <Button
+                      className="
                     flex-1
                     rounded-xl
                     "
-                    onClick={() => addCarts(p.id)}
-                  >
-                    Add Cart
-                  </Button>
+                      onClick={() => addCarts(p.id)}
+                    >
+                      Add Cart
+                    </Button>
 
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="
                     rounded-xl
                     "
-                    onClick={() => addWishList(p.id)}
-                  >
-                    ♡
-                  </Button>
+                      onClick={() => addWishList(p.id)}
+                    >
+                      ♡
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Pagination */}
-
-        <div
-          className="
+        {!loading && totalPages > 1 && (
+          <div
+            className="
         mt-10
         sm:mt-14
         flex
         justify-center
         "
-        >
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-
-                    if (page > 1) setPage(page - 1);
-                  }}
-                />
-              </PaginationItem>
-
-              {[...Array(totalPages)].map((_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
+          >
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
                     href="#"
-                    isActive={page === index + 1}
                     onClick={(e) => {
                       e.preventDefault();
 
-                      setPage(index + 1);
+                      if (page > 1) setPage(page - 1);
                     }}
-                  >
-                    {index + 1}
-                  </PaginationLink>
+                  />
                 </PaginationItem>
-              ))}
 
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
+                {[...Array(totalPages)].map((_, index) => (
+                  <PaginationItem key={index}>
+                    <PaginationLink
+                      href="#"
+                      isActive={page === index + 1}
+                      onClick={(e) => {
+                        e.preventDefault();
 
-                    if (page < totalPages) setPage(page + 1);
-                  }}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+                        setPage(index + 1);
+                      }}
+                    >
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+
+                      if (page < totalPages) setPage(page + 1);
+                    }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
     </div>
   );

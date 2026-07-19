@@ -8,6 +8,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Slider } from "@/components/ui/slider";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import {
   AlertDialog,
@@ -58,6 +59,7 @@ import {
 import { SearchIcon } from "lucide-react";
 
 const Products = () => {
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     category: "",
     search: "",
@@ -129,6 +131,8 @@ const Products = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true);
+
         const res = await API.get("/products", {
           params: {
             ...form,
@@ -144,6 +148,8 @@ const Products = () => {
         toast.error(
           error.response?.data?.message || "Failed to load products.",
         );
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -534,7 +540,25 @@ const Products = () => {
             </TableHeader>
 
             <TableBody>
-              {products.length === 0 ? (
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={8}>
+                    <div className="flex justify-center items-center py-16">
+                      <div
+                        className="
+            w-10
+            h-10
+            border-4
+            border-muted
+            border-t-primary
+            rounded-full
+            animate-spin
+            "
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : products.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={8}

@@ -1,18 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../../API/api.js";
+import { Spinner } from "@/components/ui/spinner";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        setLoading(true);
+
         const res = await API.get("/orders/");
         setOrders(res.data);
       } catch (error) {
         console.log(error.response?.data);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -54,7 +60,11 @@ const Orders = () => {
           </p>
         </div>
 
-        {orders.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Spinner className="size-8" />
+          </div>
+        ) : orders.length === 0 ? (
           <div
             className="
           bg-card
