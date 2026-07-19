@@ -3,10 +3,13 @@ import pool from "../config/db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
+import { OAuth2Client } from "google-auth-library";
 
 dotenv.config();
 
 const router = express.Router();
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const DEFAULT_AVATAR =
   "https://res.cloudinary.com/xqjlg4ei/image/upload/v1782918066/Sample_User_Icon_yqt0wv.png";
@@ -45,13 +48,19 @@ export const register = async (req, res, next) => {
   }
   const hashPass = await bcrypt.hash(password, 10);
   const user = await pool.query(
-    "insert into users(name,email,password,phone,avatar) values($1,$2,$3,$4,$5) returning id,name,email,phone,avatar,role",
+    `
+  INSERT INTO users
+  (name,email,password,phone,avatar,provider)
+  VALUES ($1,$2,$3,$4,$5,$6)
+  RETURNING id,name,email,phone,avatar,role
+  `,
     [
       name,
       email.toLowerCase().trim(),
       hashPass,
       phone,
       avatar || DEFAULT_AVATAR,
+      "local",
     ],
   );
 
@@ -82,6 +91,11 @@ export const login = async (req, res, next) => {
     return res.status(400).json({ msg: "Invalid credentials" });
   }
   const user = checkEmail.rows[0];
+  if (user.provider === "google") {
+    return res.status(400).json({
+      msg: "This account uses Google. Please continue with Google.",
+    });
+  }
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     return res.status(400).json({ msg: "Invalid credentials" });
@@ -119,4 +133,91 @@ export const me = async (req, res, next) => {
 export const logout = async (req, res, next) => {
   res.clearCookie("token", clearCookieOptions);
   res.status(200).json({ msg: "User logged out successfully" });
+};
+
+// google login/register
+export const googleLogin = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        msg: "Google token is required",
+      });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+
+    const { email, name, picture } = payload;
+
+    let userResult = await pool.query("SELECT * FROM users WHERE email=$1", [
+      email.toLowerCase().trim(),
+    ]);
+
+    let user;
+
+    // user exists
+    if (userResult.rows.length > 0) {
+      user = userResult.rows[0];
+
+      if (user.provider === "local") {
+        return res.status(400).json({
+          msg: "An account already exists with this email. Please use email login.",
+        });
+      }
+    } else {
+      // create google user
+
+      const newUser = await pool.query(
+        `
+        INSERT INTO users
+        (
+          name,
+          email,
+          password,
+          avatar,
+          provider
+        )
+        VALUES
+        ($1,$2,$3,$4,$5)
+        RETURNING id,name,email,phone,avatar,role
+        `,
+        [
+          name,
+          email.toLowerCase().trim(),
+          null,
+          picture || DEFAULT_AVATAR,
+          "google",
+        ],
+      );
+
+      user = newUser.rows[0];
+    }
+
+    const jwtToken = tokenGenerate(user.id, user.role);
+
+    res.cookie("token", jwtToken, cookieOptions);
+
+    res.status(200).json({
+      msg: "Google login successful",
+      user: {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        avatar: user.avatar,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      msg: "Google authentication failed",
+    });
+  }
 };

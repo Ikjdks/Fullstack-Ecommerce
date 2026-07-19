@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { GoogleLogin } from "@react-oauth/google";
+
 const Login = ({ user, setUser }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -189,6 +191,35 @@ const Login = ({ user, setUser }) => {
           >
             {loading ? "Logging in..." : "Login"}
           </Button>
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">OR</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <GoogleLogin
+            size="large"
+            shape="pill"
+            width="400"
+            text="continue_with"
+            theme="outline"
+            logo_alignment="center"
+            onSuccess={async (credentialResponse) => {
+              try {
+                const res = await API.post("/auth/google", {
+                  token: credentialResponse.credential,
+                });
+
+                setUser(res.data.user);
+                navigate("/");
+              } catch (error) {
+                console.log(error.response?.data?.msg || "Google login failed");
+              }
+            }}
+            onError={() => {
+              console.log("Google Login Failed");
+            }}
+          />
         </form>
 
         <p
