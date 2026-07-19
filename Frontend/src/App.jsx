@@ -43,6 +43,7 @@ API.defaults.withCredentials = true;
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [countdown, setCountdown] = useState(25);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -59,6 +60,23 @@ function App() {
     fetchUser();
   }, []);
 
+  useEffect(() => {
+    if (!loading) return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 0) {
+          clearInterval(timer);
+          return 0;
+        }
+
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [loading]);
+
   if (loading)
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -67,9 +85,10 @@ function App() {
         <h3 className="text-lg font-semibold">Waking up the server...</h3>
 
         <p className="mt-2 max-w-md text-sm text-muted-foreground">
-          Please wait about <span className="font-medium">20 seconds</span>{" "}
-          while the free backend server starts. This only happens after the
-          server has been inactive for a while.
+          Please wait about{" "}
+          <span className="font-medium">{countdown} seconds</span> while the
+          free backend server starts. This only happens after the server has
+          been inactive for a while.
         </p>
       </div>
     );
